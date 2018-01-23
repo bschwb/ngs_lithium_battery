@@ -1,0 +1,47 @@
+* Project Proposal
+3 models starting with a simple full battery model
+
+Define Goal:
+The goal is to get an overview of simulation techniques for Lithium-Ion Batterys.
+Simulate on different scales and compare the simulations on their numerical properties like accuracy, stability, simulation time.
+
+I propose to implement the following models:
+As a starting point implement an empirical model like: ...
+Then a 2d or 3d Continuum concentration model with NGsolve or Fenics.
+
+Sub goals, learn physics of battery, maybe fenics.
+
+Involved steps:
+  - Assemble literature about the proposed simulations.
+  - Implement the first model.
+  - Implement the second model.
+  - Implement the third model.
+  - Comparison of the models.
+  
+
+What can be simulated with which Methods?
+How could the methods be used together? Can they be combined?
+What are the different time scales and length scales?
+What problems with each method / model / simulation?
+
+** References
+ Modeling and Simulation of Lithium-Ion Batteries from a Systems Engineering Perspective.
+
+https://link.springer.com/chapter/10.1007/978-1-4419-5594-4_8
+ 
+https://www.scopus.com/results/references.uri?cc=10&sort=cp-f&src=r&nlo=&nlr=&nls=&citingId=2-s2.0-0000768675&imp=t&sid=205608052117b85ece61f8217ee45e98&sot=rec&sdt=citedreferences&sl=18&s=CITEID%280000768675%29&ss=cp-f&ps=r-f&editSaveSearch=&origin=resultslist&zone=resultslist&citeCnt=1
+https://www.scopus.com/results/references.uri?sort=cp-f&src=r&imp=t&sid=8296435c9136444cee2eb151bd5f3560&sot=rec&sdt=citedreferences&sl=19&s=CITEID%2884857427774%29&origin=recordpage&citingId=2-s2.0-84857427774&citeCnt=1&txGid=fe71859b1ee40fb9bb497eaf5b03da2c
+
+@ARTICLE{García2005,
+author={García, R.E. and Chiang, Y.-M. and Carter, W.C. and Limthongkul, P. and Bishop, C.M.},
+title={Microstructural modeling and design of rechargeable lithium-ion batteries},
+journal={Journal of the Electrochemical Society},
+year={2005},
+volume={152},
+number={1},
+pages={A255-A263},
+doi={10.1149/1.1836132},
+document_type={Article},
+}
+** People
+https://www.kth.se/profile/rakel2
