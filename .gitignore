@@ -1,0 +1,13 @@
+auto/
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+*.bbl
+*.blg
+*.out
+*.aux
+*.log
+*.toc
+
+*.pdf
