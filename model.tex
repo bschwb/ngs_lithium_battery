@@ -1,0 +1,46 @@
+\documentclass[a4paper,11pt]{scrartcl}
+\usepackage{fullpage}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage[version=4]{mhchem}
+
+% \usepackage{amsmath}
+\usepackage{commath}
+% \usepackage{amssymb}
+
+\newcommand*{\n}{n_{\ce{Li}}}
+\newcommand*{\pn}{\frac{\partial{}\n}{\partial{}t}}
+\newcommand*{\F}{\mathcal{F}}
+\newcommand*{\dv}[1]{\nabla\cdot\left({#1}\right)}
+\newcommand*{\I}[1]{\int_{\Omega}{#1}\dif{}x}
+\newcommand*{\Ib}[1]{\int_{\partial \Omega}{#1}\dif{}x}
+
+\begin{document}
+
+\[ \pn = \dv{D(\n) \nabla \n} +
+  \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi} \]
+\[ 0 = \frac{\partial\rho}{\partial{}t} =
+  \dv{\kappa_T(x) \nabla \phi} + \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \n} \]
+
+Derive variational formulation:
+
+\[ \I{\pn v} = \I{\dv{D(\n) \nabla \n} v } +
+  \I{\dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi} v} \]
+\[ - \I{D(\n) \nabla \n \cdot \nabla v} + \Ib{D(\n)(\nabla\n \cdot \^n) v}\]
+\[ -\I{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nabla v}
+-\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \^n\right)  v} \]
+
+2nd equation:
+\[ - \I{\kappa_T(x) \nabla \phi \cdot \nabla \psi} +
+\Ib{(\kappa_T(x) \nabla \phi \cdot \^n) \psi}
+\]
+\[ - \I{\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \nabla \psi} +
+\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \^n\right) \psi}
+\]
+
+$\sigma E = J$
+
+
+\end{document}
