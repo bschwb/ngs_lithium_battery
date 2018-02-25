@@ -1,3 +1,5 @@
+*.vol
+
 auto/
 *.synctex.gz
 *.fls
