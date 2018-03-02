@@ -6,16 +6,16 @@
 
 \usepackage[version=4]{mhchem}
 
-% \usepackage{amsmath}
 \usepackage{commath}
-% \usepackage{amssymb}
 
 \newcommand*{\n}{n_{\ce{Li}}}
+\newcommand*{\nv}{\hat{n}}
 \newcommand*{\pn}{\frac{\partial{}\n}{\partial{}t}}
 \newcommand*{\F}{\mathcal{F}}
 \newcommand*{\dv}[1]{\nabla\cdot\left({#1}\right)}
 \newcommand*{\I}[1]{\int_{\Omega}{#1}\dif{}x}
 \newcommand*{\Ib}[1]{\int_{\partial \Omega}{#1}\dif{}x}
+\newcommand*{\Dt}{\Delta t}
 
 \begin{document}
 
@@ -24,23 +24,50 @@
 \[ 0 = \frac{\partial\rho}{\partial{}t} =
   \dv{\kappa_T(x) \nabla \phi} + \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \n} \]
 
-Derive variational formulation:
+\section*{Variational Formulation}
 
 \[ \I{\pn v} = \I{\dv{D(\n) \nabla \n} v } +
   \I{\dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi} v} \]
-\[ - \I{D(\n) \nabla \n \cdot \nabla v} + \Ib{D(\n)(\nabla\n \cdot \^n) v}\]
+\[ - \I{D(\n) \nabla \n \cdot \nabla v} + \Ib{D(\n)(\nabla\n \cdot \nv) v}\]
 \[ -\I{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nabla v}
--\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \^n\right)  v} \]
+-\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nv\right)  v} \]
 
 2nd equation:
 \[ - \I{\kappa_T(x) \nabla \phi \cdot \nabla \psi} +
-\Ib{(\kappa_T(x) \nabla \phi \cdot \^n) \psi}
+\Ib{(\kappa_T(x) \nabla \phi \cdot \nv) \psi}
 \]
 \[ - \I{\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \nabla \psi} +
-\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \^n\right) \psi}
+\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \hat{n}\right) \psi}
 \]
 
 $\sigma E = J$
+
+\section*{Time Stepping}
+\[n_t = f(n) + g(n) \phi\]
+\[0  = A \phi + h(n)\]
+\[\frac{n(t+\Dt)-n(t)}{\Dt} = \frac{1}{2}(f(n(t+\Dt)) + g(n(t+\Dt))\phi(t+\Dt) + f(n(t))+g(n(t))\phi(t))\]
+\[0 = \frac{1}{2}\left(A \phi(t+\Dt) + h(n(t+\Dt)) + A\phi(t) + h(n(t))\right)\]
+
+One way to solve the system would be to eliminate $\phi(t+\Dt)$ from the system by
+rearranging the second equation
+  \[\phi(t+\Dt) = - A^{-1} h(n(t+\Dt)) - \phi(t) - h(n(t))\]
+and then plugging that into the first equation.
+\end{enumerate}
+
+\section*{Questions}
+\begin{enumerate}
+\item Activity coefficient?
+
+  There's a difference between molal and molar coefficient! Which one is applicable?
+  See~\cite{doyle95} chapter 4.
+  They also used idealized versions, because measurement is hard.
+  Also in~\cite{garcia2005} they mention, that for pure and dilute compositions
+  the activity coefficient satisfies Raoult's and Henry's law.
+
+\end{enumerate}
+
+\bibliography{model}{}
+\bibliographystyle{alpha}
 
 
 \end{document}
