@@ -38,5 +38,8 @@ geo.Append(['line', p4, p1], leftdomain=1, rightdomain=0, bc='cathode')
 for circle in circles:
     geo.AddCircle(c=(circle[0], circle[1]), r=r, leftdomain=2, rightdomain=1, bc='particle')
 
-mesh = geo.GenerateMesh(maxh=1000)
+geo.SetMaterial(1, 'electrolyte')
+geo.SetMaterial(2, 'particle')
+
+mesh = geo.GenerateMesh(maxh=100)
 mesh.Save('mesh.vol')
