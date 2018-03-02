@@ -7,6 +7,7 @@
 \usepackage[version=4]{mhchem}
 
 \usepackage{commath}
+\usepackage[retainorgcmds]{IEEEtrantools}
 
 \newcommand*{\n}{n_{\ce{Li}}}
 \newcommand*{\nv}{\hat{n}}
@@ -19,40 +20,51 @@
 
 \begin{document}
 
-\[ \pn = \dv{D(\n) \nabla \n} +
-  \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi} \]
-\[ 0 = \frac{\partial\rho}{\partial{}t} =
-  \dv{\kappa_T(x) \nabla \phi} + \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \n} \]
+Our model equations are:
+\begin{IEEEeqnarray*}{rCl}
+ \pn &=& \dv{D(\n) \nabla \n} +
+  \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi} \\
+0 &=& \frac{\partial\rho}{\partial{}t} =
+  \dv{\kappa_T(x) \nabla \phi} + \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \n}
+\end{IEEEeqnarray*}
 
 \section*{Variational Formulation}
 
-\[ \I{\pn v} = \I{\dv{D(\n) \nabla \n} v } +
-  \I{\dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi} v} \]
-\[ - \I{D(\n) \nabla \n \cdot \nabla v} + \Ib{D(\n)(\nabla\n \cdot \nv) v}\]
-\[ -\I{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nabla v}
--\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nv\right)  v} \]
+\begin{IEEEeqnarray*}{rCl}
+  \I{\pn v} &=& \I{\dv{D(\n) \nabla \n} v}
+  +\I{\dv{\frac{D(\n) z(x) \F \n}{RT} \nabla \phi} v} \\
+&=& -\I{D(\n) \nabla \n \cdot \nabla v} + \Ib{D(\n)(\nabla\n \cdot \nv) v} \\
+&&-\I{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nabla v}
+-\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nv\right)  v}
+\end{IEEEeqnarray*}
 
-2nd equation:
-\[ - \I{\kappa_T(x) \nabla \phi \cdot \nabla \psi} +
-\Ib{(\kappa_T(x) \nabla \phi \cdot \nv) \psi}
-\]
-\[ - \I{\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \nabla \psi} +
+\begin{IEEEeqnarray*}{rCl}
+0 &=& - \I{\kappa_T(x) \nabla \phi \cdot \nabla \psi} +
+\Ib{(\kappa_T(x) \nabla \phi \cdot \nv) \psi} \\
+&& - \I{\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \nabla \psi} +
 \Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \hat{n}\right) \psi}
-\]
+\end{IEEEeqnarray*}
 
 $\sigma E = J$
 
 \section*{Time Stepping}
-\[n_t = f(n) + g(n) \phi\]
-\[0  = A \phi + h(n)\]
-\[\frac{n(t+\Dt)-n(t)}{\Dt} = \frac{1}{2}(f(n(t+\Dt)) + g(n(t+\Dt))\phi(t+\Dt) + f(n(t))+g(n(t))\phi(t))\]
-\[0 = \frac{1}{2}\left(A \phi(t+\Dt) + h(n(t+\Dt)) + A\phi(t) + h(n(t))\right)\]
+We write our system in a shorter form:
+\begin{IEEEeqnarray*}{rCl}
+n_t &=& f(n) + g(n) \phi \\
+0  &=& A \phi + h(n)
+\end{IEEEeqnarray*}
+We first try the Crank-Nicolson method, because it is unconditionally stable.
+Another joice would be the implicit Euler method.
+\begin{IEEEeqnarray*}{rCl}
+\frac{n(t+\Dt)-n(t)}{\Dt} &=& \frac{1}{2}(f(n(t+\Dt)) + g(n(t+\Dt))\phi(t+\Dt) +
+f(n(t))+g(n(t))\phi(t)) \\
+0 &=& \frac{1}{2}\left(A \phi(t+\Dt) + h(n(t+\Dt)) + A\phi(t) + h(n(t))\right)
+\end{IEEEeqnarray*}
 
-One way to solve the system would be to eliminate $\phi(t+\Dt)$ from the system by
+One way to solve the system would be to eliminate $\phi(t+\Dt)$ by
 rearranging the second equation
   \[\phi(t+\Dt) = - A^{-1} h(n(t+\Dt)) - \phi(t) - h(n(t))\]
 and then plugging that into the first equation.
-\end{enumerate}
 
 \section*{Questions}
 \begin{enumerate}
