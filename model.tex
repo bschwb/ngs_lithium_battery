@@ -16,8 +16,9 @@
 \newcommand*{\pn}{\frac{\partial{}\n}{\partial{}t}}
 \newcommand*{\F}{\mathcal{F}}
 \newcommand*{\dv}[1]{\nabla\cdot\left({#1}\right)}
-\newcommand*{\I}[1]{\int_{\Omega}{#1}\dif{}x}
-\newcommand*{\Ib}[1]{\int_{\partial \Omega}{#1}\dif{}x}
+\newcommand*{\dx}{\dif{}x}
+\newcommand*{\I}[1]{\int_{\Omega}{#1}\dx}
+\newcommand*{\Ib}[1]{\int_{\partial \Omega}{#1}\dx}
 \newcommand*{\Dt}{\Delta t}
 
 \begin{document}
@@ -48,14 +49,25 @@ $J = \kappa E = - \kappa \nabla \phi$
   +\I{\dv{\frac{D(\n) z(x) \F \n}{RT} \nabla \phi} v} \\
 &=& -\I{D(\n) \nabla \n \cdot \nabla v} + \Ib{D(\n)(\nabla\n \cdot \nv) v} \\
 &&-\I{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nabla v}
--\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nv\right)  v}
++\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nv\right) v} \\
+&=& -\I{D(\n) \nabla \n \cdot \nabla v}
++ \int_{\partial\Omega_{3}}{D(\n)\left(\frac{I_0}{A\F n_T}\right) v}\dx \\
+&&-\I{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nabla v} \\
+&&-\int_{\partial\Omega_{3,5}}{i_0(\n) (\alpha_a+\alpha_c)\eta_e(\phi,\n)
+  \frac{D(\n) z(x) \F^2 \n}{R^2 T^2 \kappa_T(x)}} v \dx \\
+&&+\int_{\partial\Omega_4}{\frac{D(\n) z(x) \F \n I_0}{R T \kappa_T(x) A} v} \dx \\
 \end{IEEEeqnarray*}
 
 \begin{IEEEeqnarray*}{rCl}
 0 &=& - \I{\kappa_T(x) \nabla \phi \cdot \nabla \psi} +
 \Ib{(\kappa_T(x) \nabla \phi \cdot \nv) \psi} \\
 && - \I{\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \nabla \psi} +
-\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \hat{n}\right) \psi}
+\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \hat{n}\right) \psi} \\
+&=& - \I{\kappa_T(x) \nabla \phi \cdot \nabla \psi}
+-\int_{\partial\Omega_{3,5}} i_0(\n) \frac{(\alpha_a+\alpha_c)\F\eta_e(\phi,\n)}{RT}\psi \dx \\
+&& +\int_{\partial\Omega_4} \frac{I_0}{A\kappa_T}\psi \dx \\
+&& - \I{\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \nabla \psi}
++ \int_{\partial\Omega_{3}}{\frac{D(\n)I_0 z(x) \F \n}{RTA\F n_T} \psi}\dx \\
 \end{IEEEeqnarray*}
 
 
@@ -78,6 +90,10 @@ rearranging the second equation
   \[\phi(t+\Dt) = - A^{-1} h(n(t+\Dt)) - \phi(t) - h(n(t))\]
 and then plugging that into the first equation.
 
+\section*{Notes}
+\begin{enumerate}
+\item Don't forget normalizing $\Li$ boundary conditions.
+\end{enumerate}
 \section*{Questions}
 \begin{enumerate}
 \item Activity coefficient?
@@ -92,6 +108,15 @@ and then plugging that into the first equation.
 
   They are part of the (non-)linear functions $f, g, A, h$.
 
+\item Are the functions dependent on the $\Li$ concentration dependent on the
+  relative or absolute concentration?
+
+  Probably absolute.
+
+\item On boundaries $\partial\Omega_{3,5}$ is $z(x) = 0$ or $1$?
+
+  Probably $1$, because otherwise the whole boundary condition would never
+  have an influence.
 \end{enumerate}
 
 \bibliography{model}{}
