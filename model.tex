@@ -6,10 +6,12 @@
 
 \usepackage[version=4]{mhchem}
 
+\usepackage{graphicx}
 \usepackage{commath}
 \usepackage[retainorgcmds]{IEEEtrantools}
 
-\newcommand*{\n}{n_{\ce{Li}}}
+\newcommand*{\Li}{\ce{Li}}
+\newcommand*{\n}{n_{\Li}}
 \newcommand*{\nv}{\hat{n}}
 \newcommand*{\pn}{\frac{\partial{}\n}{\partial{}t}}
 \newcommand*{\F}{\mathcal{F}}
@@ -19,14 +21,25 @@
 \newcommand*{\Dt}{\Delta t}
 
 \begin{document}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\linewidth]{pic/geometry.png}
+\end{figure}
 
 Our model equations are:
-\begin{IEEEeqnarray*}{rCl}
- \pn &=& \dv{D(\n) \nabla \n} +
+\begin{IEEEeqnarray*}{cc}
+ 1\&2 & \left\{\begin{aligned}\pn = \dv{D(\n) \nabla \n} +
   \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi} \\
-0 &=& \frac{\partial\rho}{\partial{}t} =
-  \dv{\kappa_T(x) \nabla \phi} + \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \n}
+0 = \frac{\partial\rho}{\partial{}t} =
+  \dv{\kappa_T(x) \nabla \phi} + \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \n} \\
+  \end{aligned}\right. \\
+  3\&5 & J \cdot \nv = i_0(\n) \frac{(\alpha_a + \alpha_c) \F \eta_e(\phi, \n)}{RT}
+  \\
+  3 & N^0_{\Li} = \frac{I_0}{A \F} \\
+  4 &\left\{\begin{aligned}J \cdot \nv_c = - \frac{I_0}{A} \\ N_{\Li} \cdot \nv_c = 0\end{aligned}\right.\\
+  6 & \left\{\begin{aligned}J \cdot \nv = 0 \\ N_{\Li} \cdot \nv = 0\end{aligned}\right.
 \end{IEEEeqnarray*}
+$J = \kappa E = - \kappa \nabla \phi$
 
 \section*{Variational Formulation}
 
@@ -45,7 +58,6 @@ Our model equations are:
 \Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \hat{n}\right) \psi}
 \end{IEEEeqnarray*}
 
-$\sigma E = J$
 
 \section*{Time Stepping}
 We write our system in a shorter form:

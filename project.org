@@ -2,8 +2,12 @@
   CLOSED: [2018-03-02 Fri 17:09]
 * DONE Grab geometry picture from Netgen and add numbers
   CLOSED: [2018-03-02 Fri 17:21]
-* NEXT Add picture of geometry to model.tex
-* TODO Write down boundary conditions
-* TODO Add boundary conditions to matrices forms
+* DONE Add picture of geometry to model.tex
+  CLOSED: [2018-03-03 Sat 16:48]
+* DONE Write down boundary conditions
+  CLOSED: [2018-03-03 Sat 16:48]
+** DONE Add numbers to boundary conditions in model description
+   CLOSED: [2018-03-03 Sat 17:01]
+* NEXT Add boundary conditions to matrices forms
 * TODO Setup timestep
 * TODO Setup non-linear solver
