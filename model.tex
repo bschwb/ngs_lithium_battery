@@ -20,6 +20,8 @@
 \newcommand*{\I}[1]{\int_{\Omega}{#1}\dx}
 \newcommand*{\Ib}[1]{\int_{\partial \Omega}{#1}\dx}
 \newcommand*{\Dt}{\Delta t}
+\newcommand*{\Po}{\Phi_{\text{contact}}^{\text{ohmic}}}
+
 
 \begin{document}
 \begin{figure}[h]
@@ -27,7 +29,8 @@
 \includegraphics[width=0.5\linewidth]{pic/geometry.png}
 \end{figure}
 
-Our model equations are:
+\section*{Model Equations}
+Taken from~\cite{garcia05}:
 \begin{IEEEeqnarray*}{cc}
  1\&2 & \left\{\begin{aligned}\pn = \dv{D(\n) \nabla \n} +
   \dv{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi} \\
@@ -40,7 +43,27 @@ Our model equations are:
   4 &\left\{\begin{aligned}J \cdot \nv_c = - \frac{I_0}{A} \\ N_{\Li} \cdot \nv_c = 0\end{aligned}\right.\\
   6 & \left\{\begin{aligned}J \cdot \nv = 0 \\ N_{\Li} \cdot \nv = 0\end{aligned}\right.
 \end{IEEEeqnarray*}
-$J = \kappa E = - \kappa \nabla \phi$
+
+Further relations and equations:
+\[J = \kappa E = - \kappa \nabla \phi\]
+\[D_{\Li} = D_{\Li}^*\left(1+\frac{\partial{}\ln{\gamma_{\Li}}}{\partial{}\ln{\n}}\right)\]
+\[i_0(\n) = \F k_r (n_s - \n)^{\alpha_a}(\n)^{\alpha_c}\]
+\[\eta_e = E \cdot \delta - \left[ U(\n) - \Po \right]\]
+\[\Po = R_cI_0\]
+
+\subsection*{Open-circuit potentials}
+\begin{itemize}
+  \item \ce{Li_yMn_2O_4} equation (A-1) from~\cite{doyle95}.
+    \begin{IEEEeqnarray*}{rCl}
+      U(\n) &=& 4.19829 + 0.0565661 \tanh{[-14.5546 \n + 8.60942]} \\
+      &-& 0.0275479 \left[ \frac{1}{(0.998432-\n)0.492465}-1.90111 \right] \\
+      &-& 0.157123 \exp{(-0.04738 \n^8)} + 0.810239 \exp{[-40(\n-0.133875)]}
+    \end{IEEEeqnarray*}
+
+  \item \ce{Li_xC_6} equation (A-2) from~\cite{doyle95}.
+    \[ U(\n) = -0.16 + 1.32 \exp{(-3.0 \n)}\]
+
+\end{itemize}
 
 \section*{Variational Formulation}
 
@@ -91,17 +114,17 @@ rearranging the second equation
 and then plugging that into the first equation.
 
 \section*{Notes}
-\begin{enumerate}
+\begin{itemize}
 \item Don't forget normalizing $\Li$ boundary conditions.
-\end{enumerate}
+\end{itemize}
 \section*{Questions}
-\begin{enumerate}
+\begin{itemize}
 \item Activity coefficient?
 
   There's a difference between molal and molar coefficient! Which one is applicable?
   See~\cite{doyle95} chapter 4.
   They also used idealized versions, because measurement is hard.
-  Also in~\cite{garcia2005} they mention, that for pure and dilute compositions
+  Also in~\cite{garcia05} they mention, that for pure and dilute compositions
   the activity coefficient satisfies Raoult's and Henry's law.
 
 \item How to incorporate boundary conditions into time stepping?
@@ -109,15 +132,27 @@ and then plugging that into the first equation.
   They are part of the (non-)linear functions $f, g, A, h$.
 
 \item Are the functions dependent on the $\Li$ concentration dependent on the
-  relative or absolute concentration?
+  relative or absolute concentration? Which units?
 
-  Probably absolute.
+  Probably absolute. Molar concentrations maybe.
+
+\item The open-circuit potentials are they with molar concentrations?
+
+  Unsure because of the \ce{Li_yMn_2O_4} notation and saying that $y$ is the
+  parameter for the potential.
 
 \item On boundaries $\partial\Omega_{3,5}$ is $z(x) = 0$ or $1$?
 
   Probably $1$, because otherwise the whole boundary condition would never
   have an influence.
-\end{enumerate}
+
+\item What is porosity $\epsilon$ in~\cite{garcia05} Table II?
+
+\item How big is the process zone $\boldsymbol{\delta} = \delta \boldsymbol{\hat{n}}$?
+
+  For now take it as $\delta_a$ for boundary condition 3 and the radius of the
+  particle for boundary condition 5.
+\end{itemize}
 
 \bibliography{model}{}
 \bibliographystyle{alpha}
