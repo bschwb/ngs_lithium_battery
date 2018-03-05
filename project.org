@@ -24,9 +24,11 @@
   CLOSED: [2018-03-05 Mon 16:55]
 * DONE Add additional equations
   CLOSED: [2018-03-05 Mon 17:34]
-* NEXT Add bcs to bilinear forms in battery.py
-* TODO Setup timestep
+* DONE Add bcs to bilinear forms in battery.py
+  CLOSED: [2018-03-05 Mon 22:21]
+* NEXT Setup timestep
 * TODO Setup non-linear solver
+* TODO Fix interface work dimension problem
 * TODO Add a formula for the activity coefficient
 * TODO Find missing constants/values
 * TODO Range checks?
