@@ -10,16 +10,17 @@
    CLOSED: [2018-03-03 Sat 17:01]
 * DONE Plug boundary conditions into variational formulation
   CLOSED: [2018-03-03 Sat 18:57]
-* NEXT Extend model description
+* DONE Extend model description
+  CLOSED: [2018-03-05 Mon 15:41]
 ** DONE Add missing equations
    CLOSED: [2018-03-05 Mon 00:00]
 ** DONE Add a table of constant
    CLOSED: [2018-03-05 Mon 13:34]
 ** DONE Recheck open circuit potentials
    CLOSED: [2018-03-05 Mon 13:57]
-** NEXT Find missing constants/values
-* TODO Set initial conditions on concentration and potential
+* NEXT Set initial conditions on concentration and potential
 * TODO Add bcs to bilinear forms in NGSolve model description
 * TODO Setup timestep
 * TODO Setup non-linear solver
-* TODO Add a formulat for the activity coefficient
+* TODO Add a formula for the activity coefficient
+* TODO Find missing constants/values
