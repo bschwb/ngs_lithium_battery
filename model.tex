@@ -54,15 +54,16 @@ Further relations and equations:
 
 \subsection*{Open-circuit potentials}
 \begin{itemize}
-  \item \ce{Li_yMn_2O_4} equation (A-1) from~\cite{doyle95}.
+  \item \ce{Li_yMn_2O_4} equation (A-1) from~\cite{doyle95} Appendix 3-A.
     \begin{IEEEeqnarray*}{rCl}
-      U(\n) &=& 4.19829 + 0.0565661 \tanh{[-14.5546 \n + 8.60942]} \\
-      &-& 0.0275479 \left[ \frac{1}{(0.998432-\n)0.492465}-1.90111 \right] \\
-      &-& 0.157123 \exp{(-0.04738 \n^8)} + 0.810239 \exp{[-40(\n-0.133875)]}
+      U(y) &=& 4.19829 + 0.0565661 \tanh{[-14.5546 y + 8.60942]} \\
+      &-& 0.0275479 \left[ \frac{1}{(0.998432-y)0.492465}-1.90111 \right]\\
+      &-& 0.157123 \exp{(-0.04738 y^8)} + 0.810239 \exp{[-40(y-0.133875)]}
+      \qquad 0 \leq y \leq 1.0 \\
     \end{IEEEeqnarray*}
 
-  \item \ce{Li_xC_6} equation (A-2) from~\cite{doyle95}.
-    \[ U(\n) = -0.16 + 1.32 \exp{(-3.0 \n)}\]
+  \item \ce{Li_xC_6} equation (A-2) from~\cite{doyle95} Appendix 3-A.
+    \[ U(x) = -0.16 + 1.32 \exp{(-3.0 x)}, \quad 0 \leq x \leq 0.7\]
 
 \end{itemize}
 
@@ -201,6 +202,8 @@ $I_0$ discharge current some multiple of battery capacity \si{\mA\hour}
   open circuit potential for \ce{Li_xC_6} is 0 at ~0.7 in graph from~\cite{doyle95} Appendix 2-A.
 
 \item Which open-circuit potentials should we use? Appendix 2-A or 3-A?
+
+\item What are the initial conditions in the electrolyte?
 
 \end{itemize}
 
