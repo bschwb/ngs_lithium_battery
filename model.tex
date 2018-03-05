@@ -6,6 +6,7 @@
 
 \usepackage[version=4]{mhchem}
 
+\usepackage{siunitx}
 \usepackage{graphicx}
 \usepackage{commath}
 \usepackage[retainorgcmds]{IEEEtrantools}
@@ -101,7 +102,7 @@ n_t &=& f(n) + g(n) \phi \\
 0  &=& A \phi + h(n)
 \end{IEEEeqnarray*}
 We first try the Crank-Nicolson method, because it is unconditionally stable.
-Another joice would be the implicit Euler method.
+Another choice would be the implicit Euler method.
 \begin{IEEEeqnarray*}{rCl}
 \frac{n(t+\Dt)-n(t)}{\Dt} &=& \frac{1}{2}(f(n(t+\Dt)) + g(n(t+\Dt))\phi(t+\Dt) +
 f(n(t))+g(n(t))\phi(t)) \\
@@ -112,6 +113,37 @@ One way to solve the system would be to eliminate $\phi(t+\Dt)$ by
 rearranging the second equation
   \[\phi(t+\Dt) = - A^{-1} h(n(t+\Dt)) - \phi(t) - h(n(t))\]
 and then plugging that into the first equation.
+
+\section*{Parameters and Constants}
+
+\begin{tabular}{c|c|c|c}
+  Symbol & Name & Value & Unit \\
+ \hline
+  $\F$ & Faraday constant & \num{96485.33289} & \si{\coulomb  \mol^{-1}}\\
+  $R$ & molar gas constant & \num{8.3144598} & \si{\J \K^{-1} \mol^{-1}}\\
+ \hline
+  $D_{m}$ & diffusivity of electrolyte/carbon mixture & \num{2.66e-5}& \si{\cm^2\s^{-1}} \\
+  $D_{p}$ & diffusivity of \ce{Li_yMn_2O_4} particles & \num{1e-9}& \si{\cm^2\s^{-1}} \\
+  $\kappa_{T, m}$ & electric conductivity of electrolyte/carbon mixture & \num{2.53e-2} & \si{\siemens\cm^{-1}}\\
+  $\kappa_{T, p}$ & electric conductivity of \ce{Li_yMn_2O_4} particles & \num{3.8e-2} & \si{\siemens\cm^{-1}}\\
+  $T$ & absolute temperature & \num{298.15} & \si{\K} \\
+  $n_T$ & normalization concentration value for lithium & \num{22.86} & \si{\mol\dm^{-3}} \\
+  $\alpha_a$ & anodic empirical constant & \num{0.5} & \\
+  $\alpha_c$ & cathodic empirical constant & \num{0.5} & \\
+  $A$ & battery cross-sectional area & \num{24.0} & \si{\cm^2} \\
+  $k_r$ & reaction rate constant at particle/electrolyte interface & \num{24.0} & \si{\cm^2} \\
+  & battery capacity & \num{2} & \si{\mA\hour\cm^{-2}} \\
+  $n_s$ & solubility limit of lithium in the electrode & ? & \si{\mol} \\
+  $\delta_a$ & anode thickness & \num{250} & \si{\um} \\
+  $\delta_c$ & cathode thickness & \num{174} & \si{\um} \\
+  $\delta_s$ & separator thickness & \num{50} & \si{\um} \\
+  $R_c$ & total electrode contact resistance & \num{2e-3} & \si{\ohm} \\
+ \hline
+  $n_0^a$ & normalized initial concentration of lithium in anode & \num{0.72} & \\
+  $\phi_0$ & initial electric potential in cathode & \num{4.2} & \si{\V} \\
+\end{tabular}
+
+$I_0$ discharge current some multiple of battery capacity \si{\mA\hour}
 
 \section*{Notes}
 \begin{itemize}
@@ -139,7 +171,7 @@ and then plugging that into the first equation.
 \item The open-circuit potentials are they with molar concentrations?
 
   Unsure because of the \ce{Li_yMn_2O_4} notation and saying that $y$ is the
-  parameter for the potential.
+  parameter for the potential. It ranges from 0.0 to 1.0.
 
 \item On boundaries $\partial\Omega_{3,5}$ is $z(x) = 0$ or $1$?
 
@@ -152,6 +184,24 @@ and then plugging that into the first equation.
 
   For now take it as $\delta_a$ for boundary condition 3 and the radius of the
   particle for boundary condition 5.
+
+\item Should we use Butler-Volmer relation instead of linearized version?
+  Or stated differently: Is $|\F \eta_e R T| \ll 1$?
+
+\item Do we need the equations for the anode?
+
+  Probably yes, because the Butler-Volmer relation needs to now the potential
+  and concentration in the anode.
+
+\item What is the reaction rate constant at the anode/electrolyte interface?
+
+\item What is the solubility limit of lithium $n_s$ in the electrodes?
+
+  Maybe one if we use relative concentration. Or depending on electrode, because
+  open circuit potential for \ce{Li_xC_6} is 0 at ~0.7 in graph from~\cite{doyle95} Appendix 2-A.
+
+\item Which open-circuit potentials should we use? Appendix 2-A or 3-A?
+
 \end{itemize}
 
 \bibliography{model}{}

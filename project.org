@@ -13,7 +13,11 @@
 * NEXT Finish model description
 ** DONE Add missing equations
    CLOSED: [2018-03-05 Mon 00:00]
-** NEXT Add a table of constant
+** DONE Add a table of constant
+   CLOSED: [2018-03-05 Mon 13:34]
+** NEXT Recheck open circuit potentials
+** TODO Find missing constants/values
+* TODO Set initial conditions on concentration and potential
 * TODO Add bcs to bilinear forms in NGSolve model description
 * TODO Setup timestep
 * TODO Setup non-linear solver
