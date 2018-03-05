@@ -20,7 +20,9 @@
    CLOSED: [2018-03-05 Mon 13:57]
 * DONE Set initial conditions on concentration and potential
   CLOSED: [2018-03-05 Mon 16:19]
-* NEXT Add constants to battery.py
+* DONE Add constants to battery.py
+  CLOSED: [2018-03-05 Mon 16:55]
+* NEXT Add additional equations
 * TODO Add bcs to bilinear forms in battery.py
 * TODO Setup timestep
 * TODO Setup non-linear solver
