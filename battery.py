@@ -8,6 +8,8 @@ TODO:
 * Add activity coefficient
 """
 
+from math import tanh, exp
+
 from scipy.constants import physical_constants
 import ngsolve as ngs
 from ngsolve import grad, y
@@ -19,6 +21,7 @@ F = physical_constants['Faraday constant'][0]  # C mol^-1
 
 ## Geometry Parameters
 particle_radius = 8.5  # µm
+thickness_anode = 250  # µm
 thickness_cathode = 174  # µm
 thickness_separator = 50  # µm
 height = thickness_separator + thickness_cathode  # µm
@@ -27,10 +30,12 @@ height = thickness_separator + thickness_cathode  # µm
 temperature = 298.15  # K (25deg Celsius)
 discharge_rate =  2 * 1e-3 * 1e-8  # A µm^-2
 area = 24 * 1e8  # µm^2
+discharge_factor = 1
+discharge_current = discharge_factor * discharge_rate * area  # A
 
 ## Initial values
 norm_concentr = 22.86 * 1e-15  # mol µm^-3
-solubility_limit = 1.2  # mol µm^-2
+solubility_limit = 1.2  # TODO: Still unsure about that
 norm_init_concentr = {'electrolyte': solubility_limit, 'particle': 0.72}
 anode_init_pot = 4.2  # Volt
 
@@ -44,6 +49,55 @@ alpha_a = 0.5
 alpha_c = 0.5
 reaction_rate = 5e-5 * 1e4  # µm s^-1
 electrode_contact_resistance = 2e-13  # Ohm
+
+
+## equations
+def open_circuit_manganese(concentr):
+    """Return open-circuit potential for Li_yMn2O4
+
+    param: concentr - relative lithium concentration
+
+    concentration range: [0, 1.0]
+    """
+    a = 4.19829
+    b = 0.0565661 * tanh[-14.5546*concentr + 8.60942]
+    c = 0.0275479 * (1/((0.998432-concentr) * 0.492465 - 1.90111))
+    d = 0.157123 * exp(-0.04738 * concentr**8)
+    e = 0.810239 * exp(-40*(concentr-0.133875))
+    return a + b - c - d + e
+
+
+def open_circuit_carbon(concentr):
+    """Return open-circuit potential for Li_xC6
+
+    param: concentr - relative lithium concentration
+
+    concentration range: [0, 0.7]
+    """
+    return -0.16 + 1.32 * exp(-3 * concentr)
+
+
+def charge_flux_prefactor(concentr):
+    """Return prefactor for Butler-Volmer relation
+
+    params: concentr - relative lithium concentration
+    """
+    li_factor = norm_concentration * (solubility_limit - concentr)**alpha_a * concentr**alpha_c
+    return F * reaction_rate * li_factor
+
+
+def material_overpotential_cathode(concentr, pot):
+    """Return material overpotential for cathode Li_yMn2O4 particles"""
+    ohmic_contact_pot = electrode_contact_resistance * discharge_current  # V
+    interface_work = -grad(pot) * particle_radius  # V
+    return interface_work - open_circuit_manganese(concentr) + ohmic_contact_pot  # V
+
+
+def material_overpotential_anode(concentr, pot):
+    """Return material overpotential for Li_xC6 anode"""
+    ohmic_contact_pot = electrode_contact_resistance * discharge_current  # V
+    interface_work = -grad(pot) * anode_thickness  # V
+    return interface_work - open_circuit_carbon(concentr) + ohmic_contact_pot  # V
 
 
 with ngs.TaskManager():

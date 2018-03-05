@@ -22,9 +22,11 @@
   CLOSED: [2018-03-05 Mon 16:19]
 * DONE Add constants to battery.py
   CLOSED: [2018-03-05 Mon 16:55]
-* NEXT Add additional equations
-* TODO Add bcs to bilinear forms in battery.py
+* DONE Add additional equations
+  CLOSED: [2018-03-05 Mon 17:34]
+* NEXT Add bcs to bilinear forms in battery.py
 * TODO Setup timestep
 * TODO Setup non-linear solver
 * TODO Add a formula for the activity coefficient
 * TODO Find missing constants/values
+* TODO Range checks?

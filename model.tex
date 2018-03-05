@@ -118,7 +118,7 @@ and then plugging that into the first equation.
 \section*{Parameters and Constants}
 
 \begin{tabular}{c|c|S|s}
-  Symbol & Name & Value & Unit \\
+  Symbol & Name & \text{Value} & Unit \\
  \hline
   $\F$ & Faraday constant & 96485.33289 & \coulomb  \mol^{-1}\\
   $R$ & molar gas constant & 8.3144598 & \J \K^{-1} \mol^{-1}\\
@@ -205,7 +205,7 @@ $I_0$ discharge current some multiple of battery capacity \si{\mA\hour}
 
 \item What is the initial concentration in the electrolyte?
 
-  From pictures in~\cite{garcia15} it seems, like initial concentration of $\Li$
+  From pictures in~\cite{garcia05} it seems, like initial concentration of $\Li$
   is \num{1.2} in electrolyte.
 
 \item What is the initial potential?
@@ -213,6 +213,9 @@ $I_0$ discharge current some multiple of battery capacity \si{\mA\hour}
   We know initial potential at cathode. Maybe just use a linear gradient down to 0.
 
 \item How wide is battery cell?
+
+\item How to properly use potential / electrical field at process zone? How to
+  implement in NGSolve?
 
 \end{itemize}
 
