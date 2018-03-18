@@ -1,39 +1,47 @@
-* DONE Write down next steps
-  CLOSED: [2018-03-02 Fri 17:09]
-* DONE Grab geometry picture from Netgen and add numbers
-  CLOSED: [2018-03-02 Fri 17:21]
-* DONE Add picture of geometry to model.tex
-  CLOSED: [2018-03-03 Sat 16:48]
-* DONE Write down boundary conditions
-  CLOSED: [2018-03-03 Sat 16:48]
-** DONE Add numbers to boundary conditions in model description
-   CLOSED: [2018-03-03 Sat 17:01]
-* DONE Plug boundary conditions into variational formulation
-  CLOSED: [2018-03-03 Sat 18:57]
-* DONE Extend model description
-  CLOSED: [2018-03-05 Mon 15:41]
-** DONE Add missing equations
-   CLOSED: [2018-03-05 Mon 00:00]
-** DONE Add a table of constant
-   CLOSED: [2018-03-05 Mon 13:34]
-** DONE Recheck open circuit potentials
-   CLOSED: [2018-03-05 Mon 13:57]
-* DONE Set initial conditions on concentration and potential
-  CLOSED: [2018-03-05 Mon 16:19]
-* DONE Add constants to battery.py
-  CLOSED: [2018-03-05 Mon 16:55]
-* DONE Add additional equations
-  CLOSED: [2018-03-05 Mon 17:34]
-* DONE Add bcs to bilinear forms in battery.py
-  CLOSED: [2018-03-05 Mon 22:21]
-* DONE Setup time stepping
-  CLOSED: [2018-03-18 Sun 16:25]
-* DONE Setup non-linear solver
-  CLOSED: [2018-03-18 Sun 16:25]
-* NEXT Document how time stepping works
-* TODO Fix time stepping
-Things to try:
-* TODO Fix interface work dimension problem
-* TODO Add a formula for the activity coefficient
-* TODO Find missing constants/values
-* TODO Range checks?
+* TODOs
+** DONE Write down next steps
+   CLOSED: [2018-03-02 Fri 17:09]
+** DONE Grab geometry picture from Netgen and add numbers
+   CLOSED: [2018-03-02 Fri 17:21]
+** DONE Add picture of geometry to model.tex
+   CLOSED: [2018-03-03 Sat 16:48]
+** DONE Write down boundary conditions
+   CLOSED: [2018-03-03 Sat 16:48]
+*** DONE Add numbers to boundary conditions in model description
+    CLOSED: [2018-03-03 Sat 17:01]
+** DONE Plug boundary conditions into variational formulation
+   CLOSED: [2018-03-03 Sat 18:57]
+** DONE Extend model description
+   CLOSED: [2018-03-05 Mon 15:41]
+*** DONE Add missing equations
+    CLOSED: [2018-03-05 Mon 00:00]
+*** DONE Add a table of constant
+    CLOSED: [2018-03-05 Mon 13:34]
+*** DONE Recheck open circuit potentials
+    CLOSED: [2018-03-05 Mon 13:57]
+** DONE Set initial conditions on concentration and potential
+   CLOSED: [2018-03-05 Mon 16:19]
+** DONE Add constants to battery.py
+   CLOSED: [2018-03-05 Mon 16:55]
+** DONE Add additional equations
+   CLOSED: [2018-03-05 Mon 17:34]
+** DONE Add bcs to bilinear forms in battery.py
+   CLOSED: [2018-03-05 Mon 22:21]
+** DONE Setup time stepping
+   CLOSED: [2018-03-18 Sun 16:25]
+** DONE Setup non-linear solver
+   CLOSED: [2018-03-18 Sun 16:25]
+** DONE Document how time stepping works
+   CLOSED: [2018-03-18 Sun 23:37]
+** NEXT Implement Poisson equation for potential initial value
+** TODO Fix time stepping
+ Things to try:
+ - QR Decomposition
+ - LU Decomposition with SciPy
+** TODO Add README
+** TODO Fix interface work dimension problem
+** TODO Add a formula for the activity coefficient
+** TODO Find missing constants/values
+* Ideas
+** Range checks
+** Add stress part of model

@@ -6,6 +6,8 @@
 
 \usepackage[version=4]{mhchem}
 
+\usepackage{algorithm}
+\usepackage{algorithmic}
 \usepackage{siunitx}
 \usepackage{graphicx}
 \usepackage{commath}
@@ -30,7 +32,7 @@
 \includegraphics[width=0.5\linewidth]{pic/geometry.png}
 \end{figure}
 
-\section*{Model Equations}
+\section{Model Equations}
 Taken from~\cite{garcia05}:
 \begin{IEEEeqnarray*}{cc}
  1\&2 & \left\{\begin{aligned}\pn = \dv{D(\n) \nabla \n} +
@@ -52,7 +54,7 @@ Further relations and equations:
 \[\eta_e = E \cdot \delta - \left[ U(\n) - \Po \right]\]
 \[\Po = R_cI_0\]
 
-\subsection*{Open-circuit potentials}
+\subsection{Open-circuit potentials}
 \begin{itemize}
   \item \ce{Li_yMn_2O_4} equation (A-1) from~\cite{doyle95} Appendix 3-A.
     \begin{IEEEeqnarray*}{rCl}
@@ -67,7 +69,7 @@ Further relations and equations:
 
 \end{itemize}
 
-\section*{Variational Formulation}
+\section{Variational Formulation}
 
 \begin{IEEEeqnarray*}{rCl}
   \I{\pn v} &=& \I{\dv{D(\n) \nabla \n} v}
@@ -95,27 +97,50 @@ Further relations and equations:
 + \int_{\partial\Omega_{3}}{\frac{D(\n)I_0 z(x) \F \n}{RTA\F n_T} \psi}\dx \\
 \end{IEEEeqnarray*}
 
+\section{Time Stepping}
+The whole discretized system can be written in a short form as
+\[ M \frac{\partial{}u}{\partial{}t} = f(u) \]
+where $f$ is nonlinear and $M$ is the mass matrix.
+We first try the Crank-Nicolson method, because it is unconditionally stable.
+Another choice would be the implicit Euler method.
+\[ M(u_{n+1} - u_n) = \frac{\Dt}{2} (f(u_{n+1}) + f(u_n))\]
+To solve this with Newton's Method we rearrange the equation to one side
+\[ 0 = \frac{\Dt}{2} (f(u_{n+1}) + f(u_n)) - M (u_{n+1} - u_n)\]
+where the right-hand side has the following derivative with respect to $u_{n+1}$:
+\[ \frac{\Dt}{2} \frac{\dif{}f}{\dif{}u} - M\]
 
-\section*{Time Stepping}
-We write our system in a shorter form:
+Now one whole time step looks like:
+\begin{algorithm}
+  \begin{algorithmic}
+    \STATE $w_0 = u_n$
+    \STATE $i = 0$
+    \WHILE{$i <$ iterations}
+        \STATE $w_{i+1} = w_i + \left(\frac{\Dt}{2}\frac{\dif{}f(w_i)}{\dif{}u} - M\right)^{-1}
+        \left(\frac{\Dt}{2}(f(w_{i}) + f(u_n)) - M w_i + M u_n\right)$
+        \STATE $i = i + 1$
+    \ENDWHILE
+    \STATE $u_{n+1} = w_i$
+  \end{algorithmic}
+\end{algorithm}
+
+\subsection{Version 2}
+Another option would be to write the system in the following form
 \begin{IEEEeqnarray*}{rCl}
 n_t &=& f(n) + g(n) \phi \\
 0  &=& A \phi + h(n)
 \end{IEEEeqnarray*}
-We first try the Crank-Nicolson method, because it is unconditionally stable.
-Another choice would be the implicit Euler method.
+Applying the Crank-Nicolson method we get:
 \begin{IEEEeqnarray*}{rCl}
 \frac{M(n(t+\Dt)-n(t))}{\Dt} &=& \frac{1}{2}(f(n(t+\Dt)) + g(n(t+\Dt))\phi(t+\Dt) +
 f(n(t))+g(n(t))\phi(t)) \\
 0 &=& \frac{1}{2}\left(A \phi(t+\Dt) + h(n(t+\Dt)) + A\phi(t) + h(n(t))\right)
 \end{IEEEeqnarray*}
-
 One way to solve the system would be to eliminate $\phi(t+\Dt)$ by
 rearranging the second equation
   \[\phi(t+\Dt) = - A^{-1} h(n(t+\Dt)) - \phi(t) - A^{-1} h(n(t))\]
 and then plugging that into the first equation.
 
-\section*{Parameters and Constants}
+\section{Parameters and Constants}
 
 \begin{tabular}{c|c|S|s}
   Symbol & Name & \text{Value} & Unit \\
@@ -146,11 +171,11 @@ and then plugging that into the first equation.
 
 $I_0$ discharge current some multiple of battery capacity \si{\mA\hour}
 
-\section*{Notes}
+\section{Notes}
 \begin{itemize}
 \item Don't forget normalizing $\Li$ boundary conditions.
 \end{itemize}
-\section*{Questions}
+\section{Questions}
 \begin{itemize}
 \item Activity coefficient?
 
@@ -210,7 +235,8 @@ $I_0$ discharge current some multiple of battery capacity \si{\mA\hour}
 
 \item What is the initial potential?
 
-  We know initial potential at cathode. Maybe just use a linear gradient down to 0.
+  We know initial potential at cathode.
+  We need to solve Poisson's equation for the initial value.
 
 \item How wide is battery cell?
 

@@ -3,8 +3,6 @@
 Length scale in micrometers (µm).
 
 TODO:
-* Add boundary conditions
-* Add time stepping with non-linear solver
 * Add activity coefficient
 """
 
