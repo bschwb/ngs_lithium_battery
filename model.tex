@@ -105,14 +105,14 @@ n_t &=& f(n) + g(n) \phi \\
 We first try the Crank-Nicolson method, because it is unconditionally stable.
 Another choice would be the implicit Euler method.
 \begin{IEEEeqnarray*}{rCl}
-\frac{n(t+\Dt)-n(t)}{\Dt} &=& \frac{1}{2}(f(n(t+\Dt)) + g(n(t+\Dt))\phi(t+\Dt) +
+\frac{M(n(t+\Dt)-n(t))}{\Dt} &=& \frac{1}{2}(f(n(t+\Dt)) + g(n(t+\Dt))\phi(t+\Dt) +
 f(n(t))+g(n(t))\phi(t)) \\
 0 &=& \frac{1}{2}\left(A \phi(t+\Dt) + h(n(t+\Dt)) + A\phi(t) + h(n(t))\right)
 \end{IEEEeqnarray*}
 
 One way to solve the system would be to eliminate $\phi(t+\Dt)$ by
 rearranging the second equation
-  \[\phi(t+\Dt) = - A^{-1} h(n(t+\Dt)) - \phi(t) - h(n(t))\]
+  \[\phi(t+\Dt) = - A^{-1} h(n(t+\Dt)) - \phi(t) - A^{-1} h(n(t))\]
 and then plugging that into the first equation.
 
 \section*{Parameters and Constants}

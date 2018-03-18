@@ -119,6 +119,8 @@ def material_overpotential_anode(concentr, pot):
 n_lithium_space = ngs.H1(mesh, order=2, dirichlet='wall|cathode')
 potential_space = ngs.H1(mesh, order=2, dirichlet='wall')
 V = ngs.FESpace([n_lithium_space, potential_space])
+print(V.ndof)
+input()
 
 u, p = V.TrialFunction()
 v, q = V.TestFunction()
@@ -128,43 +130,43 @@ cf_diffusivity = ngs.CoefficientFunction([diffusivity[mat] for mat in mesh.GetMa
 cf_conductivity = ngs.CoefficientFunction([conductivity[mat] for mat in mesh.GetMaterials()])
 cf_valence = ngs.CoefficientFunction([valence[mat] for mat in mesh.GetMaterials()])
 
-f = ngs.BilinearForm(V)
-f += ngs.SymbolicBFI(cf_diffusivity * grad(u) * grad(v))
-f += ngs.SymbolicBFI(cf_diffusivity * discharge_rate / F / solubility_limit * v,
+mass = ngs.BilinearForm(V)
+mass += ngs.SymbolicBFI(u * v)
+
+a = ngs.BilinearForm(V)
+a += ngs.SymbolicBFI(cf_diffusivity * grad(u) * grad(v))
+a += ngs.SymbolicBFI(cf_diffusivity * discharge_rate / F / solubility_limit * v,
                      ngs.BND, definedon=mesh.Boundaries('anode'))
 
-g = ngs.BilinearForm(V)
-g += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * u * grad(p) * grad(v))
-g += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * material_overpotential_anode(u, p)
+a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * u * grad(p) * grad(v))
+a += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * material_overpotential_anode(u, p)
                      * cf_diffusivity * cf_valence * F**2 / R**2 / temperature**2 / cf_conductivity * u * v,
                      ngs.BND, definedon=mesh.Boundaries('particle'))
-g += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * material_overpotential_cathode(u, p)
+a += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * material_overpotential_cathode(u, p)
                      * cf_diffusivity * cf_valence * F**2 / R**2 / temperature**2 / cf_conductivity * u * v,
                      ngs.BND, definedon=mesh.Boundaries('cathode'))
-g += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature / cf_conductivity
+a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature / cf_conductivity
                      * discharge_rate * u * v,
                      ngs.BND, definedon=mesh.Boundaries('anode'))
 
-A = ngs.BilinearForm(V)
-A += ngs.SymbolicBFI(cf_conductivity * grad(p) * grad(q))
+a += ngs.SymbolicBFI(cf_conductivity * grad(p) * grad(q))
 
 
-Aboundary = ngs.BilinearForm(V)
-Aboundary += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * F / R / temperature
+a += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * F / R / temperature
                              * material_overpotential_anode(u, p) * q,
                              ngs.BND, definedon=mesh.Boundaries('particle'))
-Aboundary += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * F / R / temperature
+a += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * F / R / temperature
                              * material_overpotential_cathode(u, p) * q,
                              ngs.BND, definedon=mesh.Boundaries('cathode'))
-Aboundary += ngs.SymbolicBFI(discharge_rate / cf_conductivity * q,
+a += ngs.SymbolicBFI(discharge_rate / cf_conductivity * q,
                              ngs.BND, definedon=mesh.Boundaries('anode'))
 
-h = ngs.BilinearForm(V)
-h = ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * u * grad(u) * grad(q))
-h = ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * u * grad(u) * grad(q))
+a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * u * grad(u) * grad(q))
+a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * u * grad(u) * grad(q))
 
 with ngs.TaskManager():
-    A.Assemble()
+    mass.Assemble()
+    a.Assemble()
 
     # Initial conditions
     gfu = ngs.GridFunction(V)
@@ -172,4 +174,44 @@ with ngs.TaskManager():
     gfu.components[0].Set(cf_n0)
     gfu.components[1].Set(anode_init_pot*y/height)
 
-    ngs.Draw(mesh)
+    ngs.Draw(gfu.components[1])
+    ngs.Draw(gfu.components[0])
+    timestep = 4
+    t = timestep
+
+    w = gfu.vec.CreateVector()
+    w2 = gfu.vec.CreateVector()
+    b = gfu.vec.CreateVector()
+    b2 = gfu.vec.CreateVector()
+    mid = gfu.vec.CreateVector()
+    d = gfu.vec.CreateVector()
+    z = gfu.vec.CreateVector()
+    mat = a.mat.CreateMatrix()
+
+    curr = gfu.vec.CreateVector()
+
+    du = gfu.vec.CreateVector()
+    while t < 1000:
+        curr.data = gfu.vec
+        a.Apply(gfu.vec, b)
+        mass.Apply(gfu.vec, b2)
+        print(t)
+        for i in range(2):
+            mass.Apply(curr, w2)
+            a.Apply(curr, w)
+            d.data = gfu.vec - curr
+            mass.Apply(d, z)
+            mid.data = 1/2 * (w + b) + 1/timestep * z
+
+            a.AssembleLinearization(curr)
+            mass.AssembleLinearization(curr)
+            mat.AsVector().data = 1/2 * a.mat.AsVector() - 1/timestep * mass.mat.AsVector()
+            inv = mat.Inverse(V.FreeDofs())
+            du.data = -inv * mid
+            # print(du)
+            # input()
+            curr.data += du
+        gfu.vec.data = curr.data
+        t += timestep
+
+    ngs.Redraw()
