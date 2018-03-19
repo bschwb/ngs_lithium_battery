@@ -118,7 +118,6 @@ n_lithium_space = ngs.H1(mesh, order=2, dirichlet='wall|cathode')
 potential_space = ngs.H1(mesh, order=2, dirichlet='wall')
 V = ngs.FESpace([n_lithium_space, potential_space])
 print(V.ndof)
-input()
 
 u, p = V.TrialFunction()
 v, q = V.TestFunction()

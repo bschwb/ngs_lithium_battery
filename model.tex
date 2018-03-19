@@ -20,8 +20,9 @@
 \newcommand*{\F}{\mathcal{F}}
 \newcommand*{\dv}[1]{\nabla\cdot\left({#1}\right)}
 \newcommand*{\dx}{\dif{}x}
+\newcommand*{\ds}{\dif{}s}
 \newcommand*{\I}[1]{\int_{\Omega}{#1}\dx}
-\newcommand*{\Ib}[1]{\int_{\partial \Omega}{#1}\dx}
+\newcommand*{\Ib}[1]{\int_{\partial \Omega}{#1}\ds}
 \newcommand*{\Dt}{\Delta t}
 \newcommand*{\Po}{\Phi_{\text{contact}}^{\text{ohmic}}}
 
@@ -78,11 +79,11 @@ Further relations and equations:
 &&-\I{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nabla v}
 +\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nv\right) v} \\
 &=& -\I{D(\n) \nabla \n \cdot \nabla v}
-+ \int_{\partial\Omega_{3}}{D(\n)\left(\frac{I_0}{A\F n_T}\right) v}\dx \\
++ \int_{\partial\Omega_{3}}{D(\n)\left(\frac{I_0}{A\F n_T}\right) v}\ds \\
 &&-\I{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nabla v} \\
 &&-\int_{\partial\Omega_{3,5}}{i_0(\n) (\alpha_a+\alpha_c)\eta_e(\phi,\n)
-  \frac{D(\n) z(x) \F^2 \n}{R^2 T^2 \kappa_T(x)}} v \dx \\
-&&+\int_{\partial\Omega_4}{\frac{D(\n) z(x) \F \n I_0}{R T \kappa_T(x) A} v} \dx \\
+  \frac{D(\n) z(x) \F^2 \n}{R^2 T^2 \kappa_T(x)}} v \ds \\
+&&+\int_{\partial\Omega_4}{\frac{D(\n) z(x) \F \n I_0}{R T \kappa_T(x) A} v} \ds \\
 \end{IEEEeqnarray*}
 
 \begin{IEEEeqnarray*}{rCl}
@@ -91,10 +92,11 @@ Further relations and equations:
 && - \I{\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \nabla \psi} +
 \Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \hat{n}\right) \psi} \\
 &=& - \I{\kappa_T(x) \nabla \phi \cdot \nabla \psi}
--\int_{\partial\Omega_{3,5}} i_0(\n) \frac{(\alpha_a+\alpha_c)\F\eta_e(\phi,\n)}{RT}\psi \dx \\
-&& +\int_{\partial\Omega_4} \frac{I_0}{A\kappa_T}\psi \dx \\
+-\int_{\partial\Omega_{3,5}} i_0(\n)
+\frac{(\alpha_a+\alpha_c)\F\eta_e(\phi,\n)}{RT}\psi \ds \\
+&& +\int_{\partial\Omega_4} \frac{I_0}{A\kappa_T}\psi \ds \\
 && - \I{\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \nabla \psi}
-+ \int_{\partial\Omega_{3}}{\frac{D(\n)I_0 z(x) \F \n}{RTA\F n_T} \psi}\dx \\
++ \int_{\partial\Omega_{3}}{\frac{D(\n)I_0 z(x) \F \n}{RTA\F n_T} \psi}\ds \\
 \end{IEEEeqnarray*}
 
 \section{Time Stepping}
@@ -140,8 +142,24 @@ rearranging the second equation
   \[\phi(t+\Dt) = - A^{-1} h(n(t+\Dt)) - \phi(t) - A^{-1} h(n(t))\]
 and then plugging that into the first equation.
 
-\section{Parameters and Constants}
+\section{Initial Conditions}
+The initial potential at the cathode is $\SI{4.2}{\volt}$ (see Table~\ref{tbl:params}).
+To obtain the initial potential on the whole domain we solve Poisson's equation:
+\begin{IEEEeqnarray*}{rCl}
+  \nabla \cdot D &=& \rho \\
+  \nabla \cdot (\varepsilon E) &=& \rho \\
+  \nabla \cdot (-\varepsilon \nabla \phi) &=& \rho
+\end{IEEEeqnarray*}
+And for the variational formulation we have:
+\begin{IEEEeqnarray*}{rCl}
+\I{\nabla \cdot (-\varepsilon \nabla \phi) \psi} &=& \I{\rho \psi} \\
+\I{\varepsilon \nabla \phi \cdot \nabla \psi} -
+\Ib{\varepsilon (\nabla \phi \cdot \nv) \psi} &=& \I{\rho \psi} \\
+\end{IEEEeqnarray*}
 
+\begin{table}
+  \caption{Parameters and Constants}
+  \label{tbl:params}
 \begin{tabular}{c|c|S|s}
   Symbol & Name & \text{Value} & Unit \\
  \hline
@@ -158,7 +176,7 @@ and then plugging that into the first equation.
   $\alpha_c$ & cathodic empirical constant & 0.5 & \\
   $A$ & battery cross-sectional area & 24.0 & \cm^2 \\
   $k_r$ & reaction rate constant at particle/electrolyte interface & 5e-5 & \cm\s^{-1} \\
-  & battery capacity & 2 & \mA\hour\cm^{-2} \\
+  $C$ & battery capacity & 2 & \mA\hour\cm^{-2} \\
   $n_s$ & solubility limit of lithium in the electrode & ? & \mol \\
   $\delta_a$ & anode thickness & 250 & \um \\
   $\delta_c$ & cathode thickness & 174 & \um \\
@@ -167,9 +185,11 @@ and then plugging that into the first equation.
  \hline
   $n_0^a$ & normalized initial concentration of lithium in anode & 0.72 & \\
   $\phi_0$ & initial electric potential in cathode & 4.2 & \V \\
+  $I_0$ & discharge current & $x \cdot C$ & \mA\hour \\
 \end{tabular}
+\end{table}
 
-$I_0$ discharge current some multiple of battery capacity \si{\mA\hour}
+
 
 \section{Notes}
 \begin{itemize}
@@ -201,8 +221,7 @@ $I_0$ discharge current some multiple of battery capacity \si{\mA\hour}
 
 \item On boundaries $\partial\Omega_{3,5}$ is $z(x) = 0$ or $1$?
 
-  Probably $1$, because otherwise the whole boundary condition would never
-  have an influence.
+  Well depends probably on for which volume element the boundary element is evaluated.
 
 \item What is porosity $\epsilon$ in~\cite{garcia05} Table II?
 
@@ -236,7 +255,7 @@ $I_0$ discharge current some multiple of battery capacity \si{\mA\hour}
 \item What is the initial potential?
 
   We know initial potential at cathode.
-  We need to solve Poisson's equation for the initial value.
+  We need to solve Poisson's equation for the initial value on the whole domain.
 
 \item How wide is battery cell?
 
@@ -245,6 +264,12 @@ $I_0$ discharge current some multiple of battery capacity \si{\mA\hour}
 
   Use special normal coefficient function! Need to then maybe solve equations in
   anode too and set each time the concentration there?
+
+\item What is $\varepsilon_r$ in the domains?
+
+\item What is $\rho$ in the domains?
+
+  I would say it's 0 anyway in the particles, because the ions are only in the electrolyte.
 
 \end{itemize}
 

@@ -34,6 +34,11 @@
 ** DONE Document how time stepping works
    CLOSED: [2018-03-18 Sun 23:37]
 ** NEXT Implement Poisson equation for potential initial value
+*** DONE Think through theory
+    CLOSED: [2018-03-19 Mon 12:46]
+    Boundary conditions?
+*** DONE Document theory
+*** NEXT Implementation
 ** TODO Fix time stepping
  Things to try:
  - QR Decomposition
@@ -42,6 +47,7 @@
 ** TODO Fix interface work dimension problem
 ** TODO Add a formula for the activity coefficient
 ** TODO Find missing constants/values
+** TODO Add licence
 * Ideas
 ** Range checks
 ** Add stress part of model
