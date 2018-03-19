@@ -94,25 +94,17 @@ n = ngs.specialcf.normal(mesh.dim)
 
 
 def material_overpotential_cathode(concentr, pot):
-    """Return material overpotential for cathode Li_yMn2O4 particles
-
-    TODO: Fix interface work dimension problem
-    """
+    """Return material overpotential for cathode Li_yMn2O4 particles"""
     ohmic_contact_pot = electrode_contact_resistance * discharge_current  # V
     interface_work = -particle_radius * grad(pot) * n  # V
-    # return interface_work - open_circuit_manganese(concentr) + ohmic_contact_pot  # V
-    return open_circuit_manganese(concentr) + ohmic_contact_pot  # V
+    return interface_work - open_circuit_manganese(concentr) + ohmic_contact_pot  # V
 
 
 def material_overpotential_anode(concentr, pot):
-    """Return material overpotential for Li_xC6 anode
-
-    TODO: Fix interface work dimension problem
-    """
+    """Return material overpotential for Li_xC6 anode"""
     ohmic_contact_pot = electrode_contact_resistance * discharge_current  # V
-    interface_work = -thickness_anode * grad(pot) * thickness_anode  # V
-    # return interface_work - open_circuit_carbon(concentr) + ohmic_contact_pot  # V
-    return open_circuit_carbon(concentr) + ohmic_contact_pot  # V
+    interface_work = -thickness_anode * grad(pot) * n  # V
+    return interface_work - open_circuit_carbon(concentr) + ohmic_contact_pot  # V
 
 
 n_lithium_space = ngs.H1(mesh, order=2, dirichlet='wall|cathode')

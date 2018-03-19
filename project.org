@@ -41,13 +41,16 @@
 *** DONE Document theory
 *** DONE Implementation
     CLOSED: [2018-03-19 Mon 14:49]
+** DONE Fix interface work dimension problem
+   CLOSED: [2018-03-19 Mon 21:56]
+   Appearently was just a typo.
+   Used thickness again instead of normal vector for anode potential.
 ** NEXT Fix time stepping
    Think through, if we can work all through the simulation with the normalized concentration.
  Things to try:
  - QR Decomposition
  - LU Decomposition with SciPy
 ** TODO Add README
-** TODO Fix interface work dimension problem
 ** TODO Add a formula for the activity coefficient
 ** TODO Find missing constants/values
 ** TODO Add licence
