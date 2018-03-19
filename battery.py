@@ -33,7 +33,7 @@ discharge_current = discharge_rate * area  # A
 ## Initial values
 norm_concentr = 22.86 * 1e-15  # mol µm^-3
 solubility_limit = 1.2  # TODO: Still unsure about that
-norm_init_concentr = {'electrolyte': solubility_limit, 'particle': 0.72}
+norm_init_concentr = {'electrolyte': solubility_limit, 'particle': 0.18}
 cathode_init_pot = 4.2  # Volt
 
 ## Material Properties
@@ -107,9 +107,8 @@ def material_overpotential_anode(concentr, pot):
     return interface_work - open_circuit_carbon(concentr) + ohmic_contact_pot  # V
 
 
-# TODO: This are probably not the right boundary conditions!
-n_lithium_space = ngs.H1(mesh, order=2, dirichlet='wall|cathode')
-potential_space = ngs.H1(mesh, order=2, dirichlet='wall')
+n_lithium_space = ngs.H1(mesh, order=2)
+potential_space = ngs.H1(mesh, order=2)
 V = ngs.FESpace([n_lithium_space, potential_space])
 print(V.ndof)
 
@@ -125,35 +124,33 @@ mass = ngs.BilinearForm(V)
 mass += ngs.SymbolicBFI(u * v)
 
 a = ngs.BilinearForm(V)
-a += ngs.SymbolicBFI(cf_diffusivity * grad(u) * grad(v))
-a += ngs.SymbolicBFI(cf_diffusivity * discharge_rate / F / solubility_limit * v,
+a += ngs.SymbolicBFI(-cf_diffusivity * grad(u) * grad(v))
+a += ngs.SymbolicBFI(cf_diffusivity * discharge_rate / F * v,
                      ngs.BND, definedon=mesh.Boundaries('anode'))
 
-a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * u * grad(p) * grad(v))
-a += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * material_overpotential_anode(u, p)
+a += ngs.SymbolicBFI(-cf_diffusivity * cf_valence * F / R / temperature * u * grad(p) * grad(v))
+a += ngs.SymbolicBFI(-charge_flux_prefactor(u) * (alpha_a + alpha_c) * material_overpotential_cathode(u, p)
                      * cf_diffusivity * cf_valence * F**2 / R**2 / temperature**2 / cf_conductivity * u * v,
                      ngs.BND, definedon=mesh.Boundaries('particle'))
-a += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * material_overpotential_cathode(u, p)
+a += ngs.SymbolicBFI(-charge_flux_prefactor(u) * (alpha_a + alpha_c) * material_overpotential_anode(u, p)
                      * cf_diffusivity * cf_valence * F**2 / R**2 / temperature**2 / cf_conductivity * u * v,
-                     ngs.BND, definedon=mesh.Boundaries('cathode'))
+                     ngs.BND, definedon=mesh.Boundaries('anode'))
 a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature / cf_conductivity
                      * discharge_rate * u * v,
+                     ngs.BND, definedon=mesh.Boundaries('cathode'))
+
+a += ngs.SymbolicBFI(-cf_conductivity * grad(p) * grad(q))
+a += ngs.SymbolicBFI(-charge_flux_prefactor(u) * (alpha_a + alpha_c) * F / R / temperature
+                     * material_overpotential_anode(u, p) * q,
                      ngs.BND, definedon=mesh.Boundaries('anode'))
+a += ngs.SymbolicBFI(-charge_flux_prefactor(u) * (alpha_a + alpha_c) * F / R / temperature
+                     * material_overpotential_cathode(u, p) * q,
+                     ngs.BND, definedon=mesh.Boundaries('particle'))
+a += ngs.SymbolicBFI(discharge_rate * q, ngs.BND, definedon=mesh.Boundaries('cathode'))
 
-a += ngs.SymbolicBFI(cf_conductivity * grad(p) * grad(q))
-
-
-a += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * F / R / temperature
-                             * material_overpotential_anode(u, p) * q,
-                             ngs.BND, definedon=mesh.Boundaries('particle'))
-a += ngs.SymbolicBFI(charge_flux_prefactor(u) * (alpha_a + alpha_c) * F / R / temperature
-                             * material_overpotential_cathode(u, p) * q,
-                             ngs.BND, definedon=mesh.Boundaries('cathode'))
-a += ngs.SymbolicBFI(discharge_rate / cf_conductivity * q,
-                             ngs.BND, definedon=mesh.Boundaries('anode'))
-
-a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * u * grad(u) * grad(q))
-a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * u * grad(u) * grad(q))
+a += ngs.SymbolicBFI(-cf_diffusivity * cf_valence * F / R / temperature * u * grad(u) * grad(q))
+a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * discharge_rate * u * q,
+                     ngs.BND, definedon=mesh.Boundaries('anode'))
 
 with ngs.TaskManager():
     mass.Assemble()

@@ -43,7 +43,7 @@ Taken from~\cite{garcia05}:
   \end{aligned}\right. \\
   3\&5 & J \cdot \nv = i_0(\n) \frac{(\alpha_a + \alpha_c) \F \eta_e(\phi, \n)}{RT}
   \\
-  3 & N^0_{\Li} = \frac{I_0}{A \F} \\
+  3 & N^0_{\Li} \cdot \nv_a = \frac{I_0}{A \F} \\
   4 &\left\{\begin{aligned}J \cdot \nv_c = - \frac{I_0}{A} \\ N_{\Li} \cdot \nv_c = 0\end{aligned}\right.\\
   6 & \left\{\begin{aligned}J \cdot \nv = 0 \\ N_{\Li} \cdot \nv = 0\end{aligned}\right.
 \end{IEEEeqnarray*}
@@ -79,7 +79,7 @@ Further relations and equations:
 &&-\I{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nabla v}
 +\Ib{\left(\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nv\right) v} \\
 &=& -\I{D(\n) \nabla \n \cdot \nabla v}
-+ \int_{\partial\Omega_{3}}{D(\n)\left(\frac{I_0}{A\F n_T}\right) v}\ds \\
++ \int_{\partial\Omega_{3}}{D(\n)\left(\frac{I_0}{A\F}\right) v}\ds \\
 &&-\I{\frac{D(\n) z(x) \F \n}{R T} \nabla \phi \cdot \nabla v} \\
 &&-\int_{\partial\Omega_{3,5}}{i_0(\n) (\alpha_a+\alpha_c)\eta_e(\phi,\n)
   \frac{D(\n) z(x) \F^2 \n}{R^2 T^2 \kappa_T(x)}} v \ds \\
@@ -94,9 +94,9 @@ Further relations and equations:
 &=& - \I{\kappa_T(x) \nabla \phi \cdot \nabla \psi}
 -\int_{\partial\Omega_{3,5}} i_0(\n)
 \frac{(\alpha_a+\alpha_c)\F\eta_e(\phi,\n)}{RT}\psi \ds \\
-&& +\int_{\partial\Omega_4} \frac{I_0}{A\kappa_T}\psi \ds \\
+&& +\int_{\partial\Omega_4} \frac{I_0}{A}\psi \ds \\
 && - \I{\frac{D(\n) z(x) \F \n}{R T} \nabla \n \cdot \nabla \psi}
-+ \int_{\partial\Omega_{3}}{\frac{D(\n)I_0 z(x) \F \n}{RTA\F n_T} \psi}\ds \\
++ \int_{\partial\Omega_{3}}{\frac{D(\n)I_0 z(x)\n}{RTA} \psi}\ds \\
 \end{IEEEeqnarray*}
 
 \section{Time Stepping}
@@ -185,7 +185,7 @@ And for the variational formulation we have:
   $\delta_s$ & separator thickness & 50 & \um \\
   $R_c$ & total electrode contact resistance & 2e-3 & \ohm \\
  \hline
-  $n_0^a$ & normalized initial concentration of lithium in anode & 0.72 & \\
+  $n_0^c$ & normalized initial concentration of lithium in cathode & 0.18 & \\
   $\phi_0$ & initial electric potential in cathode & 4.2 & \V \\
   $I_0$ & discharge current & $x \cdot C$ & \mA\hour \\
   $\rho$ & charge density & & \coulomb \m^{-3}
@@ -193,11 +193,6 @@ And for the variational formulation we have:
 \end{table}
 
 
-
-\section{Notes}
-\begin{itemize}
-\item Don't forget normalizing $\Li$ boundary conditions.
-\end{itemize}
 \section{Questions}
 \begin{itemize}
 \item Activity coefficient?
@@ -265,16 +260,20 @@ And for the variational formulation we have:
 \item How to properly use potential / electrical field at process zone? How to
   implement in NGSolve?
 
-  Use special normal coefficient function! Need to then maybe solve equations in
-  anode too and set each time the concentration there?
+  Use special normal vector coefficient function!
 
-\item What is $\varepsilon_r$ in the domains?
+\item Do we need to solve equations in anode too and set each time the concentration there?
+
+  Wee do not need to compute the concentration in the anode, because the normal
+  electric field is properly defined by the potential in the domain.
+
+\item What is $\varepsilon_r$ in the particles and the electrolyte?
 
 \item What is $\rho$ in the domains?
 
   I would say it's 0 anyway in the particles, because the ions are only in the electrolyte.
   Otherwhise we have a positive elementary charge for each Lithium-ion.
-  So the charge should be $\rho = \n n_T \F$
+  So the charge density should be $\rho = \n \F$.
 
 \item Can we run the whole model with the normalized concentration?
   Or do we have to use the actual concentration?

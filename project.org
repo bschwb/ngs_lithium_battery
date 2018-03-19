@@ -54,6 +54,7 @@
  Things to try:
  - QR Decomposition
  - LU Decomposition with SciPy
+*** TODO Use non normalized values for concentration
 ** TODO Is this a reasonable initial potential?
 ** TODO Add README
 ** TODO Add a formula for the activity coefficient
