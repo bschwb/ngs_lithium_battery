@@ -52,9 +52,13 @@
 ** NEXT Fix time stepping
    Think through, if we can work all through the simulation with the normalized concentration.
  Things to try:
- - QR Decomposition
- - LU Decomposition with SciPy
-*** TODO Use non normalized values for concentration
+ . QR Decomposition (Nullspace)
+ . LU Decomposition with SciPy\NumPy
+ . exp function can have overflow, maybe due to bad initial conditions
+ . check if $I - timestep A -> I$ is applicable and happens
+*** DONE Use non normalized values for concentration
+    CLOSED: [2018-03-19 Mon 23:55]
+*** NEXT Check LU Decomposition
 ** TODO Is this a reasonable initial potential?
 ** TODO Add README
 ** TODO Add a formula for the activity coefficient

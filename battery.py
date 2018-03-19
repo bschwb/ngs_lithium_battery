@@ -31,9 +31,11 @@ area = 24 * 1e8  # µm^2
 discharge_current = discharge_rate * area  # A
 
 ## Initial values
-norm_concentr = 22.86 * 1e-15  # mol µm^-3
-solubility_limit = 1.2  # TODO: Still unsure about that
-norm_init_concentr = {'electrolyte': solubility_limit, 'particle': 0.18}
+normalization_concentration = 22.86 * 1e-15  # mol µm^-3
+normalized_solubility_limit = 1.2  # TODO: Still unsure about that
+solubility_limit = normalized_solubility_limit * normalization_concentration
+init_concentr = {'electrolyte': solubility_limit,
+                 'particle': 0.18 * normalization_concentration}
 cathode_init_pot = 4.2  # Volt
 
 ## Material Properties
@@ -54,13 +56,14 @@ def tanh(x):
 
 
 ## equations
-def open_circuit_manganese(concentr):
+def open_circuit_manganese(concentration):
     """Return open-circuit potential for Li_yMn2O4
 
-    param: concentr - relative lithium concentration
+    param: concentration - Lithium concentration
 
-    concentration range: [0, 1.0]
+    normalized concentration range: [0, 1.0]
     """
+    concentr = concentration / normalization_concentration
     a = 4.19829
     b = 0.0565661 * tanh(-14.5546*concentr + 8.60942 )
     c = 0.0275479 * (1/((0.998432-concentr) * 0.492465 - 1.90111))
@@ -69,22 +72,23 @@ def open_circuit_manganese(concentr):
     return a + b - c - d + e
 
 
-def open_circuit_carbon(concentr):
+def open_circuit_carbon(concentration):
     """Return open-circuit potential for Li_xC6
 
-    param: concentr - relative lithium concentration
+    param: concentration - Lithium concentration
 
-    concentration range: [0, 0.7]
+    normalized concentration range: [0, 0.7]
     """
+    concentr = concentration / normalization_concentration
     return -0.16 + 1.32 * exp(-3 * concentr)
 
 
-def charge_flux_prefactor(concentr):
+def charge_flux_prefactor(concentration):
     """Return prefactor for Butler-Volmer relation
 
-    params: concentr - relative lithium concentration
+    params: concentration - Lithium concentration
     """
-    li_factor = norm_concentr * sqrt(solubility_limit - concentr) * sqrt(concentr)
+    li_factor = sqrt(solubility_limit - concentration) * sqrt(concentration)
     return F * reaction_rate * li_factor
 
 
@@ -158,7 +162,7 @@ with ngs.TaskManager():
 
     # Initial conditions
     gfu = ngs.GridFunction(V)
-    cf_n0 = ngs.CoefficientFunction([norm_init_concentr[mat] for mat in mesh.GetMaterials()])
+    cf_n0 = ngs.CoefficientFunction([init_concentr[mat] for mat in mesh.GetMaterials()])
     gfu.components[0].Set(cf_n0)
 
     ## Poisson's equation for initial potential
@@ -173,7 +177,7 @@ with ngs.TaskManager():
     a_pot.Assemble()
 
     f_pot = ngs.LinearForm(initial_potential_space)
-    f_pot += ngs.SymbolicLFI(cf_valence * cf_n0 * F * norm_concentr * psi)
+    f_pot += ngs.SymbolicLFI(cf_valence * cf_n0 * F * psi)
     f_pot.Assemble()
 
     gf_phi = ngs.GridFunction(initial_potential_space)
@@ -188,8 +192,8 @@ with ngs.TaskManager():
     gfu.components[1].vec.data = gf_phi.vec
 
     # Time stepping
-    ngs.Draw(gfu.components[0])
     ngs.Draw(gfu.components[1])
+    ngs.Draw(gfu.components[0])
     input()
     timestep = 4
     t = timestep
