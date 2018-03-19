@@ -158,6 +158,7 @@ And for the variational formulation we have:
 \end{IEEEeqnarray*}
 
 \begin{table}
+  \centering
   \caption{Parameters and Constants}
   \label{tbl:params}
 \begin{tabular}{c|c|S|s}
@@ -165,6 +166,7 @@ And for the variational formulation we have:
  \hline
   $\F$ & Faraday constant & 96485.33289 & \coulomb  \mol^{-1}\\
   $R$ & molar gas constant & 8.3144598 & \J \K^{-1} \mol^{-1}\\
+  $\varepsilon_0$ & vacuum permittivity & 8.85e-12 & \farad \m^{-1} \\
  \hline
   $D_{m}$ & diffusivity of electrolyte/carbon mixture & 2.66e-5& \cm^2\s^{-1} \\
   $D_{p}$ & diffusivity of \ce{Li_yMn_2O_4} particles & 1e-9& \cm^2\s^{-1} \\
@@ -186,6 +188,7 @@ And for the variational formulation we have:
   $n_0^a$ & normalized initial concentration of lithium in anode & 0.72 & \\
   $\phi_0$ & initial electric potential in cathode & 4.2 & \V \\
   $I_0$ & discharge current & $x \cdot C$ & \mA\hour \\
+  $\rho$ & charge density & & \coulomb \m^{-3}
 \end{tabular}
 \end{table}
 
@@ -257,7 +260,7 @@ And for the variational formulation we have:
   We know initial potential at cathode.
   We need to solve Poisson's equation for the initial value on the whole domain.
 
-\item How wide is battery cell?
+\item How wide is the battery cell?
 
 \item How to properly use potential / electrical field at process zone? How to
   implement in NGSolve?
@@ -270,6 +273,13 @@ And for the variational formulation we have:
 \item What is $\rho$ in the domains?
 
   I would say it's 0 anyway in the particles, because the ions are only in the electrolyte.
+  Otherwhise we have a positive elementary charge for each Lithium-ion.
+  So the charge should be $\rho = \n n_T \F$
+
+\item Can we run the whole model with the normalized concentration?
+  Or do we have to use the actual concentration?
+
+  Maybe not, because it's not linear in $\n$.
 
 \end{itemize}
 

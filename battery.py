@@ -6,7 +6,7 @@ TODO:
 * Add activity coefficient
 """
 
-from scipy.constants import physical_constants
+from scipy.constants import physical_constants, epsilon_0
 import ngsolve as ngs
 from ngsolve import grad, y, sqrt, exp
 
@@ -14,6 +14,7 @@ from ngsolve import grad, y, sqrt, exp
 ## Physical Constants
 R = physical_constants['molar gas constant'][0]  # J mol^-1 K^-1
 F = physical_constants['Faraday constant'][0]  # C mol^-1
+vacuum_permittivity = 1e-6 * epsilon_0  # F µm^-1
 
 ## Geometry Parameters
 particle_radius = 8.5  # µm
@@ -33,7 +34,7 @@ discharge_current = discharge_rate * area  # A
 norm_concentr = 22.86 * 1e-15  # mol µm^-3
 solubility_limit = 1.2  # TODO: Still unsure about that
 norm_init_concentr = {'electrolyte': solubility_limit, 'particle': 0.72}
-anode_init_pot = 4.2  # Volt
+cathode_init_pot = 4.2  # Volt
 
 ## Material Properties
 diffusivity = {'electrolyte': 2.66e-5 * 1e8, 'particle': 1e-9 * 1e8}  # µm^2 s^-1
@@ -169,10 +170,33 @@ with ngs.TaskManager():
     gfu = ngs.GridFunction(V)
     cf_n0 = ngs.CoefficientFunction([norm_init_concentr[mat] for mat in mesh.GetMaterials()])
     gfu.components[0].Set(cf_n0)
-    gfu.components[1].Set(anode_init_pot*y/height)
 
+
+    ## Poisson's equation for initial potential
+    phi = potential_space.TrialFunction()
+    psi = potential_space.TestFunction()
+
+    a_pot = ngs.BilinearForm(potential_space)
+    a_pot += ngs.SymbolicBFI(vacuum_permittivity * grad(phi) * grad(psi))
+    a_pot.Assemble()
+
+    f_pot = ngs.LinearForm(potential_space)
+    f_pot += ngs.SymbolicLFI(cf_valence * cf_n0 * F * norm_concentr * psi)
+    f_pot.Assemble()
+
+    gf_phi = ngs.GridFunction(potential_space)
+    gf_phi.Set(ngs.CoefficientFunction(cathode_init_pot), definedon=mesh.Boundaries('cathode'))
+    gf_phi.Set(ngs.CoefficientFunction(0), definedon=mesh.Boundaries('anode'))
+    gf_phi.vec.data = a_pot.mat.Inverse(potential_space.FreeDofs()) * f_pot.vec
+
+    ngs.Draw(gf_phi)
+    input()
+    gfu.components[1].vec.data = gf_phi.vec
+
+    # Time stepping
     ngs.Draw(gfu.components[1])
     ngs.Draw(gfu.components[0])
+    input()
     timestep = 4
     t = timestep
 
@@ -209,6 +233,6 @@ with ngs.TaskManager():
             # input()
             curr.data += du
         gfu.vec.data = curr.data
+        ngs.Redraw()
         t += timestep
 
-    ngs.Redraw()

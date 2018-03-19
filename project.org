@@ -33,13 +33,16 @@
    CLOSED: [2018-03-18 Sun 16:25]
 ** DONE Document how time stepping works
    CLOSED: [2018-03-18 Sun 23:37]
-** NEXT Implement Poisson equation for potential initial value
+** DONE Implement Poisson equation for potential initial value
+   CLOSED: [2018-03-19 Mon 14:49]
 *** DONE Think through theory
     CLOSED: [2018-03-19 Mon 12:46]
     Boundary conditions?
 *** DONE Document theory
-*** NEXT Implementation
-** TODO Fix time stepping
+*** DONE Implementation
+    CLOSED: [2018-03-19 Mon 14:49]
+** NEXT Fix time stepping
+   Think through, if we can work all through the simulation with the normalized concentration.
  Things to try:
  - QR Decomposition
  - LU Decomposition with SciPy
