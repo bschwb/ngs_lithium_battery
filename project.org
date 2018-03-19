@@ -33,23 +33,28 @@
    CLOSED: [2018-03-18 Sun 16:25]
 ** DONE Document how time stepping works
    CLOSED: [2018-03-18 Sun 23:37]
+** DONE Fix interface work dimension problem
+   CLOSED: [2018-03-19 Mon 21:56]
+   Appearently was just a typo.
+   Used thickness again instead of normal vector for anode potential.
 ** DONE Implement Poisson equation for potential initial value
-   CLOSED: [2018-03-19 Mon 14:49]
+   CLOSED: [2018-03-19 Mon 22:26]
 *** DONE Think through theory
     CLOSED: [2018-03-19 Mon 12:46]
     Boundary conditions?
 *** DONE Document theory
 *** DONE Implementation
     CLOSED: [2018-03-19 Mon 14:49]
-** DONE Fix interface work dimension problem
-   CLOSED: [2018-03-19 Mon 21:56]
-   Appearently was just a typo.
-   Used thickness again instead of normal vector for anode potential.
+*** DONE Fix too high initial potential
+    CLOSED: [2018-03-19 Mon 22:26]
+    Still unsure if it's a reasonable initial potential, but looks better at least.
+    Permittivity still an open question.
 ** NEXT Fix time stepping
    Think through, if we can work all through the simulation with the normalized concentration.
  Things to try:
  - QR Decomposition
  - LU Decomposition with SciPy
+** TODO Is this a reasonable initial potential?
 ** TODO Add README
 ** TODO Add a formula for the activity coefficient
 ** TODO Find missing constants/values

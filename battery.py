@@ -107,6 +107,7 @@ def material_overpotential_anode(concentr, pot):
     return interface_work - open_circuit_carbon(concentr) + ohmic_contact_pot  # V
 
 
+# TODO: This are probably not the right boundary conditions!
 n_lithium_space = ngs.H1(mesh, order=2, dirichlet='wall|cathode')
 potential_space = ngs.H1(mesh, order=2, dirichlet='wall')
 V = ngs.FESpace([n_lithium_space, potential_space])
@@ -163,31 +164,35 @@ with ngs.TaskManager():
     cf_n0 = ngs.CoefficientFunction([norm_init_concentr[mat] for mat in mesh.GetMaterials()])
     gfu.components[0].Set(cf_n0)
 
-
     ## Poisson's equation for initial potential
-    phi = potential_space.TrialFunction()
-    psi = potential_space.TestFunction()
+    # An extra space is needed, due to different dirichlet conditions for the initial potential
+    initial_potential_space = ngs.H1(mesh, order=2, dirichlet='anode|cathode')
+    phi = initial_potential_space.TrialFunction()
+    psi = initial_potential_space.TestFunction()
 
-    a_pot = ngs.BilinearForm(potential_space)
-    a_pot += ngs.SymbolicBFI(vacuum_permittivity * grad(phi) * grad(psi))
+    ### Stiffness matrix with small regularization term
+    a_pot = ngs.BilinearForm(initial_potential_space)
+    a_pot += ngs.SymbolicBFI(vacuum_permittivity * grad(phi) * grad(psi) + 1e-10 * phi * psi)
     a_pot.Assemble()
 
-    f_pot = ngs.LinearForm(potential_space)
+    f_pot = ngs.LinearForm(initial_potential_space)
     f_pot += ngs.SymbolicLFI(cf_valence * cf_n0 * F * norm_concentr * psi)
     f_pot.Assemble()
 
-    gf_phi = ngs.GridFunction(potential_space)
+    gf_phi = ngs.GridFunction(initial_potential_space)
     gf_phi.Set(ngs.CoefficientFunction(cathode_init_pot), definedon=mesh.Boundaries('cathode'))
     gf_phi.Set(ngs.CoefficientFunction(0), definedon=mesh.Boundaries('anode'))
-    gf_phi.vec.data = a_pot.mat.Inverse(potential_space.FreeDofs()) * f_pot.vec
-
     ngs.Draw(gf_phi)
+    input()
+    gf_phi.vec.data = a_pot.mat.Inverse(initial_potential_space.FreeDofs()) * f_pot.vec
+
+    ngs.Redraw()
     input()
     gfu.components[1].vec.data = gf_phi.vec
 
     # Time stepping
-    ngs.Draw(gfu.components[1])
     ngs.Draw(gfu.components[0])
+    ngs.Draw(gfu.components[1])
     input()
     timestep = 4
     t = timestep
