@@ -32,8 +32,8 @@ pnts = [(0, 0), (w, 0), (w, h), (0, h)]
 p1, p2, p3, p4 = [geo.AddPoint(*pnt) for pnt in pnts]
 geo.Append(['line', p1, p2], leftdomain=1, rightdomain=0, bc='anode')
 geo.Append(['line', p2, p3], leftdomain=1, rightdomain=0, bc='wall')
-geo.Append(['line', p3, p4], leftdomain=1, rightdomain=0, bc='wall')
-geo.Append(['line', p4, p1], leftdomain=1, rightdomain=0, bc='cathode')
+geo.Append(['line', p3, p4], leftdomain=1, rightdomain=0, bc='cathode')
+geo.Append(['line', p4, p1], leftdomain=1, rightdomain=0, bc='wall')
 
 for circle in circles:
     geo.AddCircle(c=(circle[0], circle[1]), r=r, leftdomain=2, rightdomain=1, bc='particle')
