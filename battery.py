@@ -166,13 +166,13 @@ with ngs.TaskManager():
 
     ## Poisson's equation for initial potential
     # An extra space is needed, due to different dirichlet conditions for the initial potential
-    initial_potential_space = ngs.H1(mesh, order=2, dirichlet='anode|cathode')
+    initial_potential_space = ngs.H1(mesh, order=2, dirichlet='cathode|anode')
     phi = initial_potential_space.TrialFunction()
     psi = initial_potential_space.TestFunction()
 
     ### Stiffness matrix with small regularization term
     a_pot = ngs.BilinearForm(initial_potential_space)
-    a_pot += ngs.SymbolicBFI(vacuum_permittivity * grad(phi) * grad(psi) + 1e-10 * phi * psi)
+    a_pot += ngs.SymbolicBFI(grad(phi) * grad(psi))
     a_pot.Assemble()
 
     f_pot = ngs.LinearForm(initial_potential_space)
@@ -181,13 +181,14 @@ with ngs.TaskManager():
 
     gf_phi = ngs.GridFunction(initial_potential_space)
     gf_phi.Set(ngs.CoefficientFunction(cathode_init_pot), definedon=mesh.Boundaries('cathode'))
-    gf_phi.Set(ngs.CoefficientFunction(0), definedon=mesh.Boundaries('anode'))
     ngs.Draw(gf_phi)
-    input()
-    gf_phi.vec.data = a_pot.mat.Inverse(initial_potential_space.FreeDofs()) * f_pot.vec
+    # input()
+    res = f_pot.vec.CreateVector()
+    res.data = f_pot.vec - a_pot.mat * gf_phi.vec
+    gf_phi.vec.data += a_pot.mat.Inverse(initial_potential_space.FreeDofs()) * res
 
     ngs.Redraw()
-    input()
+    # input()
     gfu.components[1].vec.data = gf_phi.vec
 
     # Time stepping
