@@ -179,7 +179,7 @@ And for the variational formulation we have:
   $A$ & battery cross-sectional area & 24.0 & \cm^2 \\
   $k_r$ & reaction rate constant at particle/electrolyte interface & 5e-5 & \cm\s^{-1} \\
   $C$ & battery capacity & 2 & \mA\hour\cm^{-2} \\
-  $n_s$ & solubility limit of lithium in the electrode & ? & \mol \\
+  $n_s$ & solubility limit of lithium in the electrode & 22.86 & \mol\dm^{-3} \\
   $\delta_a$ & anode thickness & 250 & \um \\
   $\delta_c$ & cathode thickness & 174 & \um \\
   $\delta_s$ & separator thickness & 50 & \um \\
@@ -240,8 +240,11 @@ And for the variational formulation we have:
 
 \item What is the solubility limit of lithium $n_s$ in the electrodes?
 
-  Maybe one if we use relative concentration. Or depending on electrode, because
-  open circuit potential for \ce{Li_xC_6} is 0 at ~0.7 in graph from~\cite{doyle95} Appendix 2-A.
+  Or depending on electrode,
+  because open circuit potential for \ce{Li_xC_6} is 0 at ~0.7 in graph from~\cite{doyle95} Appendix 2-A.
+
+  Solubility limit in the cathode is \SI{22.86}{\mol\dm^{-3}}
+  (see~\cite{garcia05} page 260).
 
 \item Which open-circuit potentials should we use? Appendix 2-A or 3-A?
 
@@ -257,8 +260,8 @@ And for the variational formulation we have:
 
 \item How wide is the battery cell?
 
-\item How to properly use potential / electrical field at process zone? How to
-  implement in NGSolve?
+\item How to properly use potential / electrical field at process zone?
+  How to implement in NGSolve?
 
   Use special normal vector coefficient function!
 
@@ -279,6 +282,9 @@ And for the variational formulation we have:
   Or do we have to use the actual concentration?
 
   Maybe not, because it's not linear in $\n$.
+  The implementation uses the actual concentration now.
+
+\item Do we have to make the concentration 2dimensional by dividing by the area?
 
 \end{itemize}
 

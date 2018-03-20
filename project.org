@@ -58,7 +58,12 @@
  . check if $I - timestep A -> I$ is applicable and happens
 *** DONE Use non normalized values for concentration
     CLOSED: [2018-03-19 Mon 23:55]
-*** NEXT Check LU Decomposition
+*** NEXT Check a matrix
+    It has nan entries!
+    Also gives nan values when applying!
+    Problems seem to be with the Butler-Volmer boundary conditions and
+    the discharge current boundary condition at the cathode-collector interface.
+**** NEXT What's the scale of the factors?
 ** TODO Is this a reasonable initial potential?
 ** TODO Add README
 ** TODO Add a formula for the activity coefficient

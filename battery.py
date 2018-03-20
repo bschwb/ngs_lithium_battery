@@ -32,9 +32,8 @@ discharge_current = discharge_rate * area  # A
 
 ## Initial values
 normalization_concentration = 22.86 * 1e-15  # mol µm^-3
-normalized_solubility_limit = 1.2  # TODO: Still unsure about that
-solubility_limit = normalized_solubility_limit * normalization_concentration
-init_concentr = {'electrolyte': solubility_limit,
+solubility_limit = normalization_concentration
+init_concentr = {'electrolyte': 1.2 * normalization_concentration,
                  'particle': 0.18 * normalization_concentration}
 cathode_init_pot = 4.2  # Volt
 
@@ -48,6 +47,7 @@ alpha_a = 0.5
 alpha_c = 0.5
 reaction_rate = 5e-5 * 1e4  # µm s^-1
 electrode_contact_resistance = 2e-13  # Ohm
+ohmic_contact_pot = electrode_contact_resistance * discharge_current  # V
 
 
 def tanh(x):
@@ -88,28 +88,12 @@ def charge_flux_prefactor(concentration):
 
     params: concentration - Lithium concentration
     """
+    # TODO: use power empirical constants here instead of sqrt
     li_factor = sqrt(solubility_limit - concentration) * sqrt(concentration)
     return F * reaction_rate * li_factor
 
 
-
 mesh = ngs.Mesh('mesh.vol')
-n = ngs.specialcf.normal(mesh.dim)
-
-
-def material_overpotential_cathode(concentr, pot):
-    """Return material overpotential for cathode Li_yMn2O4 particles"""
-    ohmic_contact_pot = electrode_contact_resistance * discharge_current  # V
-    interface_work = -particle_radius * grad(pot) * n  # V
-    return interface_work - open_circuit_manganese(concentr) + ohmic_contact_pot  # V
-
-
-def material_overpotential_anode(concentr, pot):
-    """Return material overpotential for Li_xC6 anode"""
-    ohmic_contact_pot = electrode_contact_resistance * discharge_current  # V
-    interface_work = -thickness_anode * grad(pot) * n  # V
-    return interface_work - open_circuit_carbon(concentr) + ohmic_contact_pot  # V
-
 
 n_lithium_space = ngs.H1(mesh, order=2)
 potential_space = ngs.H1(mesh, order=2)
@@ -123,6 +107,21 @@ v, q = V.TestFunction()
 cf_diffusivity = ngs.CoefficientFunction([diffusivity[mat] for mat in mesh.GetMaterials()])
 cf_conductivity = ngs.CoefficientFunction([conductivity[mat] for mat in mesh.GetMaterials()])
 cf_valence = ngs.CoefficientFunction([valence[mat] for mat in mesh.GetMaterials()])
+
+n = ngs.specialcf.normal(mesh.dim)
+
+def material_overpotential_cathode(concentr, pot):
+    """Return material overpotential for cathode Li_yMn2O4 particles"""
+    interface_work = -cf_conductivity * grad(pot) * n  # V
+    return interface_work - open_circuit_manganese(concentr) + ohmic_contact_pot  # V
+
+
+def material_overpotential_anode(concentr, pot):
+    """Return material overpotential for Li_xC6 anode"""
+    # interface_work = -thickness_anode * cf_conductivity * grad(pot) * n  # V
+    interface_work = -cf_conductivity * grad(pot) * n  # V
+    return interface_work - open_circuit_carbon(concentr) + ohmic_contact_pot  # V
+
 
 mass = ngs.BilinearForm(V)
 mass += ngs.SymbolicBFI(u * v)
@@ -182,19 +181,16 @@ with ngs.TaskManager():
     gf_phi = ngs.GridFunction(initial_potential_space)
     gf_phi.Set(ngs.CoefficientFunction(cathode_init_pot), definedon=mesh.Boundaries('cathode'))
     ngs.Draw(gf_phi)
-    # input()
     res = f_pot.vec.CreateVector()
     res.data = f_pot.vec - a_pot.mat * gf_phi.vec
     gf_phi.vec.data += a_pot.mat.Inverse(initial_potential_space.FreeDofs()) * res
 
     ngs.Redraw()
-    # input()
     gfu.components[1].vec.data = gf_phi.vec
 
     # Time stepping
     ngs.Draw(gfu.components[1])
     ngs.Draw(gfu.components[0])
-    input()
     timestep = 1
     t = 0
 
