@@ -8,7 +8,7 @@ TODO:
 
 from scipy.constants import physical_constants, epsilon_0
 import ngsolve as ngs
-from ngsolve import grad, y, sqrt, exp
+from ngsolve import grad, sqrt, exp
 
 
 ## Physical Constants
@@ -158,7 +158,6 @@ a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * dischar
 
 with ngs.TaskManager():
     mass.Assemble()
-    a.Assemble()
 
     # Initial conditions
     gfu = ngs.GridFunction(V)
@@ -195,8 +194,8 @@ with ngs.TaskManager():
     ngs.Draw(gfu.components[1])
     ngs.Draw(gfu.components[0])
     input()
-    timestep = 4
-    t = timestep
+    timestep = 1
+    t = 0
 
     w = gfu.vec.CreateVector()
     w2 = gfu.vec.CreateVector()
@@ -205,32 +204,28 @@ with ngs.TaskManager():
     mid = gfu.vec.CreateVector()
     d = gfu.vec.CreateVector()
     z = gfu.vec.CreateVector()
-    mat = a.mat.CreateMatrix()
+    mat = mass.mat.CreateMatrix()
 
     curr = gfu.vec.CreateVector()
 
     du = gfu.vec.CreateVector()
     while t < 1000:
-        curr.data = gfu.vec
+        t += timestep
+        print(t)
+
         a.Apply(gfu.vec, b)
         mass.Apply(gfu.vec, b2)
-        print(t)
+        curr.data = gfu.vec
         for i in range(2):
-            mass.Apply(curr, w2)
             a.Apply(curr, w)
-            d.data = gfu.vec - curr
-            mass.Apply(d, z)
-            mid.data = 1/2 * (w + b) + 1/timestep * z
+            w2.data = mass.mat * curr
+            mid.data = timestep/2 * (w + b) - w2 + b2
 
             a.AssembleLinearization(curr)
-            mass.AssembleLinearization(curr)
-            mat.AsVector().data = 1/2 * a.mat.AsVector() - 1/timestep * mass.mat.AsVector()
+            mat.AsVector().data = timestep/2 * a.mat.AsVector() - mass.mat.AsVector()
             inv = mat.Inverse(V.FreeDofs())
-            du.data = -inv * mid
-            # print(du)
-            # input()
-            curr.data += du
+            du.data = inv * mid
+            curr.data -= du
+
         gfu.vec.data = curr.data
         ngs.Redraw()
-        t += timestep
-
