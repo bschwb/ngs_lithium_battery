@@ -10,7 +10,7 @@ import math
 
 from scipy.constants import physical_constants, epsilon_0
 import ngsolve as ngs
-from ngsolve import grad, sqrt, exp
+from ngsolve import grad, sqrt, exp, log
 
 
 ## Physical Constants
@@ -57,6 +57,11 @@ def tanh(x):
     return (1 - exp(-2*x)) / (1 + exp(-2*x))
 
 
+def Pow(a, b):
+    """Power function for CoefficientFunctions"""
+    return exp(log(a)*b)
+
+
 ## equations
 def open_circuit_manganese(concentration):
     """Return open-circuit potential for Li_yMn2O4
@@ -67,8 +72,8 @@ def open_circuit_manganese(concentration):
     """
     concentr = concentration / normalization_concentration
     a = 4.19829
-    b = 0.0565661 * tanh(-14.5546*concentr + 8.60942 )
-    c = 0.0275479 * (1/((0.998432-concentr) * 0.492465 - 1.90111))
+    b = 0.0565661 * tanh(-14.5546*concentr + 8.60942)
+    c = 0.0275479 * (1/Pow(0.998432-concentr, 0.492465) - 1.90111)
     d = 0.157123 * exp(-0.04738 * concentr**8)
     e = 0.810239 * exp(-40*(concentr-0.133875))
     return a + b - c - d + e
