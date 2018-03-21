@@ -6,6 +6,8 @@ TODO:
 * Add activity coefficient
 """
 
+import math
+
 from scipy.constants import physical_constants, epsilon_0
 import ngsolve as ngs
 from ngsolve import grad, sqrt, exp
@@ -155,11 +157,19 @@ a += ngs.SymbolicBFI(-cf_diffusivity * cf_valence * F / R / temperature * u * gr
 a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * discharge_rate * u * q,
                      ngs.BND, definedon=mesh.Boundaries('anode'))
 
+gfu = ngs.GridFunction(V)
+
+# test if matrix contains a nan entry
+ones = gfu.vec.CreateVector()
+result = gfu.vec.CreateVector()
+ones[:] = 1
+a.Apply(ones, result)
+assert (not math.isnan(ngs.Norm(result))), 'System matrix a contains a nan entry!'
+
 with ngs.TaskManager():
     mass.Assemble()
 
     # Initial conditions
-    gfu = ngs.GridFunction(V)
     cf_n0 = ngs.CoefficientFunction([init_concentr[mat] for mat in mesh.GetMaterials()])
     gfu.components[0].Set(cf_n0)
 
