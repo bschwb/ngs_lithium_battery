@@ -31,10 +31,14 @@ norm_discharge_rate =  2 * 1e-3 * 1e-8  # A µm^-2
 discharge_rate = 1 * norm_discharge_rate  # A µm^-2
 area = 24 * 1e8  # µm^2
 discharge_current = discharge_rate * area  # A
+width = 200  # µm
+thick = area / width
 
 ## Initial values
-normalization_concentration = 22.86 * 1e-15  # mol µm^-3
-solubility_limit = normalization_concentration
+normalization_concentration_3d = 22.86 * 1e-15  # mol µm^-3
+normalization_concentration = normalization_concentration_3d / thick  # mol µm^-2
+solubility_limit_cathode = normalization_concentration
+solubility_limit_anode = 0.7 * normalization_concentration
 init_concentr = {'electrolyte': 1.2 * normalization_concentration,
                  'particle': 0.18 * normalization_concentration}
 cathode_init_pot = 4.2  # Volt
@@ -90,13 +94,27 @@ def open_circuit_carbon(concentration):
     return -0.16 + 1.32 * exp(-3 * concentr)
 
 
-def charge_flux_prefactor(concentration):
-    """Return prefactor for Butler-Volmer relation
+def charge_flux_prefactor_cathode(concentration):
+    """Return prefactor for Butler-Volmer relation in cathode
 
     params: concentration - Lithium concentration
     """
     # TODO: use power empirical constants here instead of sqrt
-    li_factor = sqrt(solubility_limit - concentration) * sqrt(concentration)
+    solubility_difference = ngs.IfPos(solubility_limit_cathode - concentration,
+                                      solubility_limit_cathode - concentration, 0)
+    li_factor = sqrt(solubility_difference) * sqrt(concentration)
+    return F * reaction_rate * li_factor
+
+
+def charge_flux_prefactor_anode(concentration):
+    """Return prefactor for Butler-Volmer relation in anode
+
+    params: concentration - Lithium concentration
+    """
+    # TODO: use power empirical constants here instead of sqrt
+    solubility_difference = ngs.IfPos(solubility_limit_anode - concentration,
+                                      solubility_limit_anode - concentration, 0)
+    li_factor = sqrt(solubility_difference) * sqrt(concentration)
     return F * reaction_rate * li_factor
 
 
@@ -139,21 +157,23 @@ a += ngs.SymbolicBFI(cf_diffusivity * discharge_rate / F * v,
                      ngs.BND, definedon=mesh.Boundaries('anode'))
 
 a += ngs.SymbolicBFI(-cf_diffusivity * cf_valence * F / R / temperature * u * grad(p) * grad(v))
-a += ngs.SymbolicBFI(-charge_flux_prefactor(u) * (alpha_a + alpha_c) * material_overpotential_cathode(u, p)
-                     * cf_diffusivity * cf_valence * F**2 / R**2 / temperature**2 / cf_conductivity * u * v,
+a += ngs.SymbolicBFI(-charge_flux_prefactor_cathode(u) * (alpha_a + alpha_c)
+                     * material_overpotential_cathode(u, p) * cf_diffusivity
+                     * cf_valence * F**2 / R**2 / temperature**2 / conductivity['particle'] * u * v,
                      ngs.BND, definedon=mesh.Boundaries('particle'))
-a += ngs.SymbolicBFI(-charge_flux_prefactor(u) * (alpha_a + alpha_c) * material_overpotential_anode(u, p)
-                     * cf_diffusivity * cf_valence * F**2 / R**2 / temperature**2 / cf_conductivity * u * v,
+a += ngs.SymbolicBFI(-charge_flux_prefactor_anode(u) * (alpha_a + alpha_c)
+                     * material_overpotential_anode(u, p) * cf_diffusivity
+                     * cf_valence * F**2 / R**2 / temperature**2 / cf_conductivity * u * v,
                      ngs.BND, definedon=mesh.Boundaries('anode'))
-a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature / cf_conductivity
+a += ngs.SymbolicBFI(cf_diffusivity * F / R / temperature / conductivity['electrolyte']
                      * discharge_rate * u * v,
                      ngs.BND, definedon=mesh.Boundaries('cathode'))
 
 a += ngs.SymbolicBFI(-cf_conductivity * grad(p) * grad(q))
-a += ngs.SymbolicBFI(-charge_flux_prefactor(u) * (alpha_a + alpha_c) * F / R / temperature
+a += ngs.SymbolicBFI(-charge_flux_prefactor_anode(u) * (alpha_a + alpha_c) * F / R / temperature
                      * material_overpotential_anode(u, p) * q,
                      ngs.BND, definedon=mesh.Boundaries('anode'))
-a += ngs.SymbolicBFI(-charge_flux_prefactor(u) * (alpha_a + alpha_c) * F / R / temperature
+a += ngs.SymbolicBFI(-charge_flux_prefactor_cathode(u) * (alpha_a + alpha_c) * F / R / temperature
                      * material_overpotential_cathode(u, p) * q,
                      ngs.BND, definedon=mesh.Boundaries('particle'))
 a += ngs.SymbolicBFI(discharge_rate * q, ngs.BND, definedon=mesh.Boundaries('cathode'))
