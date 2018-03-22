@@ -137,14 +137,13 @@ n = ngs.specialcf.normal(mesh.dim)
 
 def material_overpotential_cathode(concentr, pot):
     """Return material overpotential for cathode Li_yMn2O4 particles"""
-    interface_work = -cf_conductivity * grad(pot) * n  # V
+    interface_work = -particle_radius * cf_conductivity * grad(pot) * n  # V
     return interface_work - open_circuit_manganese(concentr) + ohmic_contact_pot  # V
 
 
 def material_overpotential_anode(concentr, pot):
     """Return material overpotential for Li_xC6 anode"""
-    # interface_work = -thickness_anode * cf_conductivity * grad(pot) * n  # V
-    interface_work = -cf_conductivity * grad(pot) * n  # V
+    interface_work = -thickness_anode * cf_conductivity * grad(pot) * n  # V
     return interface_work - open_circuit_carbon(concentr) + ohmic_contact_pot  # V
 
 
@@ -182,19 +181,12 @@ a += ngs.SymbolicBFI(-cf_diffusivity * cf_valence * F / R / temperature * u * gr
 a += ngs.SymbolicBFI(cf_diffusivity * cf_valence * F / R / temperature * discharge_rate * u * q,
                      ngs.BND, definedon=mesh.Boundaries('anode'))
 
-gfu = ngs.GridFunction(V)
-
-# test if matrix contains a nan entry
-ones = gfu.vec.CreateVector()
-result = gfu.vec.CreateVector()
-ones[:] = 1
-a.Apply(ones, result)
-assert (not math.isnan(ngs.Norm(result))), 'System matrix a contains a nan entry!'
 
 with ngs.TaskManager():
     mass.Assemble()
 
     # Initial conditions
+    gfu = ngs.GridFunction(V)
     cf_n0 = ngs.CoefficientFunction([init_concentr[mat] for mat in mesh.GetMaterials()])
     gfu.components[0].Set(cf_n0)
 
@@ -250,13 +242,17 @@ with ngs.TaskManager():
         curr.data = gfu.vec
         for i in range(2):
             a.Apply(curr, w)
+            print('curr:', ngs.Norm(curr))
+            print('w:', ngs.Norm(w))
             w2.data = mass.mat * curr
             mid.data = timestep/2 * (w + b) - w2 + b2
+            print('mid:', ngs.Norm(mid))
 
             a.AssembleLinearization(curr)
             mat.AsVector().data = timestep/2 * a.mat.AsVector() - mass.mat.AsVector()
             inv = mat.Inverse(V.FreeDofs())
             du.data = inv * mid
+            print('du:', ngs.Norm(du))
             curr.data -= du
 
         gfu.vec.data = curr.data
