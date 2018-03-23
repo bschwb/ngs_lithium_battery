@@ -10,6 +10,7 @@ import math
 
 from scipy.constants import physical_constants, epsilon_0
 import ngsolve as ngs
+from ngsolve.internal import visoptions
 from ngsolve import grad, sqrt, exp, log
 
 
@@ -38,7 +39,7 @@ thick = area / width
 normalization_concentration_3d = 22.86 * 1e-15  # mol µm^-3
 normalization_concentration = normalization_concentration_3d / thick  # mol µm^-2
 solubility_limit_cathode = normalization_concentration
-solubility_limit_anode = 0.7 * normalization_concentration
+solubility_limit_anode = 0.72 * normalization_concentration
 init_concentr = {'electrolyte': 1.2 * normalization_concentration,
                  'particle': 0.18 * normalization_concentration}
 cathode_init_pot = 4.2  # Volt
@@ -196,7 +197,6 @@ with ngs.TaskManager():
     phi = initial_potential_space.TrialFunction()
     psi = initial_potential_space.TestFunction()
 
-    ### Stiffness matrix with small regularization term
     a_pot = ngs.BilinearForm(initial_potential_space)
     a_pot += ngs.SymbolicBFI(grad(phi) * grad(psi))
     a_pot.Assemble()
@@ -207,17 +207,20 @@ with ngs.TaskManager():
 
     gf_phi = ngs.GridFunction(initial_potential_space)
     gf_phi.Set(ngs.CoefficientFunction(cathode_init_pot), definedon=mesh.Boundaries('cathode'))
-    ngs.Draw(gf_phi)
     res = f_pot.vec.CreateVector()
     res.data = f_pot.vec - a_pot.mat * gf_phi.vec
     gf_phi.vec.data += a_pot.mat.Inverse(initial_potential_space.FreeDofs()) * res
 
-    ngs.Redraw()
     gfu.components[1].vec.data = gf_phi.vec
 
-    # Time stepping
+    # Visualization
     ngs.Draw(gfu.components[1])
-    ngs.Draw(gfu.components[0])
+    ngs.Draw(1/normalization_concentration * gfu.components[0], mesh, name='nconcentration')
+    visoptions.autoscale = '0'
+    visoptions.mminval = '0'
+    visoptions.mmaxval = '1.3'
+
+    # Time stepping
     timestep = 1
     t = 0
 
