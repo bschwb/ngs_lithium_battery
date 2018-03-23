@@ -134,18 +134,15 @@ cf_diffusivity = ngs.CoefficientFunction([diffusivity[mat] for mat in mesh.GetMa
 cf_conductivity = ngs.CoefficientFunction([conductivity[mat] for mat in mesh.GetMaterials()])
 cf_valence = ngs.CoefficientFunction([valence[mat] for mat in mesh.GetMaterials()])
 
-n = ngs.specialcf.normal(mesh.dim)
 
 def material_overpotential_cathode(concentr, pot):
     """Return material overpotential for cathode Li_yMn2O4 particles"""
-    interface_work = -particle_radius * cf_conductivity * grad(pot) * n  # V
-    return interface_work - open_circuit_manganese(concentr) + ohmic_contact_pot  # V
+    return pot - open_circuit_manganese(concentr) + ohmic_contact_pot  # V
 
 
 def material_overpotential_anode(concentr, pot):
     """Return material overpotential for Li_xC6 anode"""
-    interface_work = -thickness_anode * cf_conductivity * grad(pot) * n  # V
-    return interface_work - open_circuit_carbon(concentr) + ohmic_contact_pot  # V
+    return pot - open_circuit_carbon(concentr) + ohmic_contact_pot  # V
 
 
 mass = ngs.BilinearForm(V)

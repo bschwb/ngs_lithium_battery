@@ -84,8 +84,9 @@ Faraday constant times concentration gives C/m^3.
 With reaction rate unit m/s we get A/m^2, which is a correct unit for current density.
 Now is it better to use 2D concentration to get A/m?
 Or do we get A/m automatically anyway, because we integrate over 1D?
-*** NEXT Use (actual potential - open-circuit potential) for surface overpotential instead of work 
-*** TODO Try using 0V Dirichlet at anode as simplification
+*** DONE Use (actual potential - open-circuit potential) for surface overpotential instead of work 
+    CLOSED: [2018-03-23 Fri 14:45]
+*** NEXT Try using 0V Dirichlet at anode as simplification
 to avoid for now dealing with anode concentration etc.
 *** TODO Fix initial potential
 **** DONE Is this a reasonable initial potential?
