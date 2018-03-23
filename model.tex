@@ -208,14 +208,17 @@ And for the variational formulation we have:
   They are part of the (non-)linear functions $f, g, A, h$.
 
 \item Are the functions dependent on the $\Li$ concentration dependent on the
-  relative or absolute concentration? Which units?
+  relative or absolute concentration?
 
-  Probably absolute. Molar concentrations maybe.
+  The open-circuit potentials are concentrations relative to maximum
+  intercalation in the electrode.
+  The other functions are absolute concentrations.
 
 \item The open-circuit potentials are they with molar concentrations?
 
-  Unsure because of the \ce{Li_yMn_2O_4} notation and saying that $y$ is the
-  parameter for the potential. It ranges from 0.0 to 1.0.
+  See~\cite{garcia05} page 260.
+  There it says, that the $y$ in \ce{Li_yMn_2O_4} corresponds to the relative
+  concentration with respect to the solubility limit.
 
 \item On boundaries $\partial\Omega_{3,5}$ is $z(x) = 0$ or $1$?
 
@@ -223,12 +226,14 @@ And for the variational formulation we have:
 
 \item What is porosity $\epsilon$ in~\cite{garcia05} Table II?
 
+  Probably needed for stress equations.
+
 \item How big is the process zone $\boldsymbol{\delta} = \delta \boldsymbol{\hat{n}}$?
 
   For now take it as $\delta_a$ for boundary condition 3 and the radius of the
   particle for boundary condition 5.
 
-\item Should we use Butler-Volmer relation instead of linearized version?
+\item Should we use non-linear Butler-Volmer relation instead of linearized version?
   Or stated differently: Is $|\F \eta_e R T| \ll 1$?
 
 \item Do we need the equations for the anode?
@@ -262,8 +267,10 @@ And for the variational formulation we have:
 
 \item What is the initial potential?
 
-  We know initial potential at cathode.
-  We need to solve Poisson's equation for the initial value on the whole domain.
+  In~\cite{garcia05} is mentioned that the initial potential \textbf{in} the
+  cathode is \SI{4.2}{\volt} and that the cathode is short-circuit.
+  What is meant with in the cathode?
+  Only in the particles or also in the electrolyte which is part of the cathode?
 
 \item How wide is the battery cell?
 
@@ -282,7 +289,7 @@ And for the variational formulation we have:
 \item What is $\rho$ in the domains?
 
   I would say it's 0 anyway in the particles, because the ions are only in the electrolyte.
-  Otherwhise we have a positive elementary charge for each Lithium-ion.
+  Otherwise we have a positive elementary charge for each Lithium-ion.
   So the charge density should be $\rho = \n \F$.
 
 \item Can we run the whole model with the normalized concentration?
@@ -292,6 +299,9 @@ And for the variational formulation we have:
   The implementation uses the actual concentration now.
 
 \item Do we have to make the concentration 2-dimensional by dividing by the area?
+
+  I'm unsure about this, because on the other hand integrating over 2D then
+  gives us just concentration per thickness I guess.
 
 \end{itemize}
 

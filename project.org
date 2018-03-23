@@ -35,7 +35,7 @@
    CLOSED: [2018-03-18 Sun 23:37]
 ** DONE Fix interface work dimension problem
    CLOSED: [2018-03-19 Mon 21:56]
-   Appearently was just a typo.
+   Apparently was just a typo.
    Used thickness again instead of normal vector for anode potential.
 ** DONE Implement Poisson equation for potential initial value
    CLOSED: [2018-03-19 Mon 22:26]
@@ -51,24 +51,63 @@
     Permittivity still an open question.
 ** NEXT Fix time stepping
    Think through, if we can work all through the simulation with the normalized concentration.
- Things to try:
- . QR Decomposition (Nullspace)
- . LU Decomposition with SciPy\NumPy
- . exp function can have overflow, maybe due to bad initial conditions
- . check if $I - timestep A -> I$ is applicable and happens
+   Things to try:
+   . QR Decomposition (null space)
+   . LU Decomposition with SciPy\NumPy
+   . exp function can have overflow, maybe due to bad initial conditions
+   . check if $I - time step A -> I$ is applicable and happens
 *** DONE Use non normalized values for concentration
     CLOSED: [2018-03-19 Mon 23:55]
-*** NEXT Check a matrix
+*** DONE Check stiffness matrix
+    CLOSED: [2018-03-23 Fri 12:14]
     It has nan entries!
     Also gives nan values when applying!
     Problems seem to be with the Butler-Volmer boundary conditions and
     the discharge current boundary condition at the cathode-collector interface.
-**** NEXT What's the scale of the factors?
-** TODO Is this a reasonable initial potential?
+**** DONE Discharge boundary
+     CLOSED: [2018-03-23 Fri 11:33]
+     The discharge current boundary condition was only a problem with the coefficient function.
+     Solved it by writing ~conductivity['electrolyte']~ instead of ~cf_conductivity~.
+**** DONE NaN values
+     CLOSED: [2018-03-23 Fri 11:34]
+     Nan values are not surprising when using too big values in the nonlinear circuit-overpotentials.
+**** DONE Butler-Volmer boundary conditions
+     CLOSED: [2018-03-23 Fri 14:23]
+      Butler-Volmer with interface work and open-circuit potential in surface overpotential
+      doesn't make too much sense.
+      We would need a gradient of similar to the open-circuit potential to get a small overpotential,
+      which would induce a reasonably sized current.
+      Maybe in Garcia05 they used (actual potential - open circuit potential) as the equilibrium contact potential.
+      Then the electrical work would be another small potential step to overcome, which makes more sense I think.
+*** TODO Exchange current density concentration?
+Faraday constant times concentration gives C/m^3.
+With reaction rate unit m/s we get A/m^2, which is a correct unit for current density.
+Now is it better to use 2D concentration to get A/m?
+Or do we get A/m automatically anyway, because we integrate over 1D?
+*** NEXT Use (actual potential - open-circuit potential) for surface overpotential instead of work 
+*** TODO Try using 0V Dirichlet at anode as simplification
+to avoid for now dealing with anode concentration etc.
+*** TODO Fix initial potential
+**** DONE Is this a reasonable initial potential?
+     CLOSED: [2018-03-23 Fri 12:19]
+     Probably not!
+     Now I think that the initial potential is 4.2V in all the cathode (at least the particles),
+     because it's mentioned in Garcia05, that the cathode is short-circuit (infinite electron supply)
+     and that the initial potential is in the cathode.
+     Before I interpreted that as at the cathode-collector interface.
+     In static condition (no load) the surface overpotential must be 0
+     (or almost 0 - some discharge happens slowly), the actual potential should be close to
+     the open-circuit potential.
+     The open-circuit potential for a concentration of 0.18 is around 4.2V for the LiMn2O4.
+     Also potential in anode is equal everywhere, because of nearly perfect conductivity!
+**** TODO Try setting 4.2V in the particle
+**** TODO Maybe try setting 4.2V everywhere except the separator
 ** TODO Add README
 ** TODO Add a formula for the activity coefficient
 ** TODO Find missing constants/values
-** TODO Add licence
+** TODO Add license
 * Ideas
 ** Range checks
+   They don't make too much sense, because the ranges are in functions which get parts of grid function.
+   I'm not sure how to check ranges for grid functions.
 ** Add stress part of model
