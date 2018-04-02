@@ -114,7 +114,8 @@
      Cf. with pictures in Garcia2005.
 **** CANCELLED Maybe try setting 4.2V everywhere except the separator
      CLOSED: [2018-04-02 Mon 14:23]
-*** NEXT Try damped Newton method
+*** DONE Try damped Newton method
+    CLOSED: [2018-04-02 Mon 15:21]
     Could help with NaN in application of matrix in second step,
     bc. the step won't be taken that far if NaN is the result.
 **** DONE Document damped Newton method
@@ -122,8 +123,10 @@
 **** DONE Implement damped Newton method
      CLOSED: [2018-04-02 Mon 15:13]
      Doesn't converge for now :(
-**** NEXT Recheck method
-*** TODO Try capping of open circuit potentials when out of 
+**** DONE Recheck method
+     CLOSED: [2018-04-02 Mon 15:20]
+     Works now kind of for very small damping parameters and safety rho = 1.
+*** NEXT Try capping of open circuit potentials when out of 
     This are the exp functions that can overflow.
     By capping them in a range that's not important for the model anymore we avoid that.
     E.g. relative concentration over 1 in particles.

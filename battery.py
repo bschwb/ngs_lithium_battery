@@ -207,7 +207,6 @@ with ngs.TaskManager():
     ngs.Draw(gf_phi)
     res = f_pot.vec.CreateVector()
     res.data = f_pot.vec - a_pot.mat * gf_phi.vec
-    input()
     gf_phi.vec.data += a_pot.mat.Inverse(initial_potential_space.FreeDofs()) * res
     gfu.components[1].vec.data = gf_phi.vec
 
@@ -220,7 +219,7 @@ with ngs.TaskManager():
     visoptions.mmaxval = '1.5'
 
     # Time stepping
-    timestep = 0.1
+    timestep = 4
     t = 0
 
     w = gfu.vec.CreateVector()
@@ -239,8 +238,8 @@ with ngs.TaskManager():
     old_newton_step[:] = 0
 
     du = gfu.vec.CreateVector()
-    newton_damping_sequence = [0.5**i for i in range(10)]
-    newton_safety_rho = 0.9
+    newton_damping_sequence = [0.5**i for i in range(20)]
+    newton_safety_rho = 0.99
     while t < 1000:
         t += timestep
         print('Time', t)
@@ -255,28 +254,28 @@ with ngs.TaskManager():
                 curr.data = old_newton_step
                 a.Apply(curr, w)
                 a.Apply(gfu.vec, xx)
-                print('damping:', damping)
-                print('curr:', ngs.Norm(curr))
-                print('xx:', ngs.Norm(xx))
-                print('w:', ngs.Norm(w))
+                # print('damping:', damping)
+                # print('curr:', ngs.Norm(curr))
+                # print('xx:', ngs.Norm(xx))
+                # print('w:', ngs.Norm(w))
                 w2.data = mass.mat * curr
                 mid.data = timestep/2 * (w + b) - w2 + b2
-                print('mid:', ngs.Norm(mid))
+                # print('mid:', ngs.Norm(mid))
 
                 a.AssembleLinearization(curr)
                 mat.AsVector().data = timestep/2 * a.mat.AsVector() - mass.mat.AsVector()
                 inv = mat.Inverse(V.FreeDofs())
                 du.data = inv * mid
-                print('du:', ngs.Norm(du))
+                # print('du:', ngs.Norm(du))
                 curr.data -= damping * du
-                print('curr:', ngs.Norm(curr))
+                # print('curr:', ngs.Norm(curr))
 
                 a.Apply(curr, w)
                 w2.data = mass.mat * curr
                 new_mid.data = timestep/2 * (w + b) - w2 + b2
-                print('new_mid', ngs.Norm(new_mid))
-                input()
-                if ngs.Norm(new_mid) < newton_safety_rho * ngs.Norm(mid):
+                # print('new_mid', ngs.Norm(new_mid))
+                # if ngs.Norm(new_mid) < newton_safety_rho * ngs.Norm(mid):
+                if ngs.Norm(new_mid) < ngs.Norm(mid):
                     break
                 elif damping == newton_damping_sequence[-1]:
                     print("Damped Newton doesn't converge")
