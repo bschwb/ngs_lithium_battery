@@ -121,8 +121,8 @@ def charge_flux_prefactor_anode(concentration):
 
 mesh = ngs.Mesh('mesh.vol')
 
-n_lithium_space = ngs.H1(mesh, order=2)
-potential_space = ngs.H1(mesh, order=2)
+n_lithium_space = ngs.H1(mesh, order=1)
+potential_space = ngs.H1(mesh, order=1)
 V = ngs.FESpace([n_lithium_space, potential_space])
 print(V.ndof)
 
@@ -190,7 +190,7 @@ with ngs.TaskManager():
 
     ## Poisson's equation for initial potential
     # An extra space is needed, due to different dirichlet conditions for the initial potential
-    initial_potential_space = ngs.H1(mesh, order=2, dirichlet='cathode|anode')
+    initial_potential_space = ngs.H1(mesh, order=1, dirichlet='particle|anode')
     phi = initial_potential_space.TrialFunction()
     psi = initial_potential_space.TestFunction()
 
@@ -199,26 +199,29 @@ with ngs.TaskManager():
     a_pot.Assemble()
 
     f_pot = ngs.LinearForm(initial_potential_space)
-    f_pot += ngs.SymbolicLFI(cf_valence * cf_n0 * F * psi)
+    # permittivity seems to be missing, but gives too high value if included
+    # f_pot += ngs.SymbolicLFI(cf_valence * cf_n0 * F * psi)
     f_pot.Assemble()
 
     gf_phi = ngs.GridFunction(initial_potential_space)
-    gf_phi.Set(ngs.CoefficientFunction(cathode_init_pot), definedon=mesh.Boundaries('cathode'))
+    gf_phi.Set(ngs.CoefficientFunction(cathode_init_pot), definedon=mesh.Materials('particle'))
+    ngs.Draw(gf_phi)
     res = f_pot.vec.CreateVector()
     res.data = f_pot.vec - a_pot.mat * gf_phi.vec
+    input()
     gf_phi.vec.data += a_pot.mat.Inverse(initial_potential_space.FreeDofs()) * res
-
     gfu.components[1].vec.data = gf_phi.vec
 
     # Visualization
     ngs.Draw(gfu.components[1])
     ngs.Draw(1/normalization_concentration * gfu.components[0], mesh, name='nconcentration')
+    input()
     visoptions.autoscale = '0'
     visoptions.mminval = '0'
-    visoptions.mmaxval = '1.3'
+    visoptions.mmaxval = '1.5'
 
     # Time stepping
-    timestep = 1
+    timestep = 0.11
     t = 0
 
     w = gfu.vec.CreateVector()

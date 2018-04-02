@@ -96,7 +96,8 @@ Or do we get A/m automatically anyway, because we integrate over 1D?
     CLOSED: [2018-03-23 Fri 14:45]
 *** NEXT Try using 0V Dirichlet at anode as simplification
 to avoid for now dealing with anode concentration etc.
-*** TODO Fix initial potential
+*** DONE Fix initial potential
+    CLOSED: [2018-04-02 Mon 14:23]
 **** DONE Is this a reasonable initial potential?
      CLOSED: [2018-03-23 Fri 12:19]
      Probably not!
@@ -109,8 +110,12 @@ to avoid for now dealing with anode concentration etc.
      the open-circuit potential.
      The open-circuit potential for a concentration of 0.18 is around 4.2V for the LiMn2O4.
      Also potential in anode is equal everywhere, because of nearly perfect conductivity!
-**** TODO Try setting 4.2V in the particle
-**** TODO Maybe try setting 4.2V everywhere except the separator
+**** DONE Try setting 4.2V in the particle
+     CLOSED: [2018-04-02 Mon 14:22]
+     Seems to be more sensible.
+     Cf. with pictures in Garcia2005.
+**** CANCELLED Maybe try setting 4.2V everywhere except the separator
+     CLOSED: [2018-04-02 Mon 14:23]
 ** TODO Add README
 ** TODO Add a formula for the activity coefficient
 ** TODO Find missing constants/values
