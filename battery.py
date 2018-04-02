@@ -6,7 +6,7 @@ TODO:
 * Add activity coefficient
 """
 
-import math
+import sys
 
 from scipy.constants import physical_constants, epsilon_0
 import ngsolve as ngs
@@ -220,7 +220,7 @@ with ngs.TaskManager():
     visoptions.mmaxval = '1.5'
 
     # Time stepping
-    timestep = 0.11
+    timestep = 0.1
     t = 0
 
     w = gfu.vec.CreateVector()
@@ -228,40 +228,59 @@ with ngs.TaskManager():
     b = gfu.vec.CreateVector()
     b2 = gfu.vec.CreateVector()
     mid = gfu.vec.CreateVector()
+    new_mid = gfu.vec.CreateVector()
     d = gfu.vec.CreateVector()
     z = gfu.vec.CreateVector()
     xx = gfu.vec.CreateVector()
     mat = mass.mat.CreateMatrix()
 
     curr = gfu.vec.CreateVector()
+    old_newton_step = gfu.vec.CreateVector()
+    old_newton_step[:] = 0
 
     du = gfu.vec.CreateVector()
+    newton_damping_sequence = [0.5**i for i in range(10)]
+    newton_safety_rho = 0.9
     while t < 1000:
         t += timestep
-        print(t)
+        print('Time', t)
 
         a.Apply(gfu.vec, b)
         mass.Apply(gfu.vec, b2)
         curr.data = gfu.vec
         for i in range(2):
-            a.Apply(curr, w)
-            a.Apply(gfu.vec, xx)
-            print('curr:', ngs.Norm(curr))
-            print('xx:', ngs.Norm(xx))
-            print('w:', ngs.Norm(w))
-            print('w0:', ngs.Norm(w[1:len(gfu.components[0].vec)]))
-            print('w1:', ngs.Norm(w[len(gfu.components[0].vec):len(gfu.components[0].vec)+len(gfu.components[1].vec)]))
-            w2.data = mass.mat * curr
-            mid.data = timestep/2 * (w + b) - w2 + b2
-            print('mid:', ngs.Norm(mid))
+            print('Newton step', i)
+            old_newton_step.data = curr
+            for damping in newton_damping_sequence:
+                curr.data = old_newton_step
+                a.Apply(curr, w)
+                a.Apply(gfu.vec, xx)
+                print('damping:', damping)
+                print('curr:', ngs.Norm(curr))
+                print('xx:', ngs.Norm(xx))
+                print('w:', ngs.Norm(w))
+                w2.data = mass.mat * curr
+                mid.data = timestep/2 * (w + b) - w2 + b2
+                print('mid:', ngs.Norm(mid))
 
-            a.AssembleLinearization(curr)
-            mat.AsVector().data = timestep/2 * a.mat.AsVector() - mass.mat.AsVector()
-            inv = mat.Inverse(V.FreeDofs())
-            du.data = inv * mid
-            print('du:', ngs.Norm(du))
-            input()
-            curr.data -= du
+                a.AssembleLinearization(curr)
+                mat.AsVector().data = timestep/2 * a.mat.AsVector() - mass.mat.AsVector()
+                inv = mat.Inverse(V.FreeDofs())
+                du.data = inv * mid
+                print('du:', ngs.Norm(du))
+                curr.data -= damping * du
+                print('curr:', ngs.Norm(curr))
+
+                a.Apply(curr, w)
+                w2.data = mass.mat * curr
+                new_mid.data = timestep/2 * (w + b) - w2 + b2
+                print('new_mid', ngs.Norm(new_mid))
+                input()
+                if ngs.Norm(new_mid) < newton_safety_rho * ngs.Norm(mid):
+                    break
+                elif damping == newton_damping_sequence[-1]:
+                    print("Damped Newton doesn't converge")
+                    sys.exit()
 
         gfu.vec.data = curr.data
         ngs.Redraw()
