@@ -54,6 +54,14 @@
    Things to try:
    . QR Decomposition (null space)
    . LU Decomposition with SciPy\NumPy
+   #+BEGIN_SRC
+            rows,cols,vals = mat.COO()
+            import scipy.sparse as sp
+            import scipy.linalg as la
+            A = sp.csr_matrix((vals,(rows,cols)))
+            la.lu(A.todense())
+            la.qr(A.todense())
+   #+END_SRC
    . exp function can have overflow, maybe due to bad initial conditions
    . check if $I - time step A -> I$ is applicable and happens
 *** DONE Use non normalized values for concentration

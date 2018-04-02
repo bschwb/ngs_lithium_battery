@@ -117,7 +117,7 @@ Now one whole time step looks like:
     \STATE $w_0 = u_n$
     \STATE $i = 0$
     \WHILE{$i <$ iterations}
-        \STATE $w_{i+1} = w_i + \left(\frac{\Dt}{2}\frac{\dif{}f(w_i)}{\dif{}u} - M\right)^{-1}
+        \STATE $w_{i+1} = w_i - \left(\frac{\Dt}{2}\frac{\dif{}f(w_i)}{\dif{}u} - M\right)^{-1}
         \left(\frac{\Dt}{2}(f(w_{i}) + f(u_n)) - M w_i + M u_n\right)$
         \STATE $i = i + 1$
     \ENDWHILE
