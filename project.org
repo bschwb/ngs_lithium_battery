@@ -114,6 +114,17 @@
      Cf. with pictures in Garcia2005.
 **** CANCELLED Maybe try setting 4.2V everywhere except the separator
      CLOSED: [2018-04-02 Mon 14:23]
+*** NEXT Try damped Newton Method
+Could help with NaN in application of matrix in second step,
+ bc. the step won't be taken that far if NaN is the result.
+**** DONE Document damped Newton Method
+     CLOSED: [2018-04-02 Mon 14:44]
+**** NEXT Implement damped Newton Method
+*** TODO Try capping of open circuit potentials when out of 
+    This are the exp functions that can overflow.
+    By capping them in a range that's not important for the model anymore we avoid that.
+    E.g. relative concentration over 1 in particles.
+    Make sure to use smooth enough cap (exp, tanh etc).
 *** TODO Exchange current density concentration?
 Faraday constant times concentration gives C/m^3.
 With reaction rate unit m/s we get A/m^2, which is a correct unit for current density.

@@ -125,6 +125,27 @@ Now one whole time step looks like:
   \end{algorithmic}
 \end{algorithm}
 
+\subsection{Damped Newton Method}
+We try to tackle the problem of overflowing when applying the matrix after the
+first Newton step by using the damped Newton method.
+This may help, since it will use a smaller step in case the next step would
+yield \verb!NaN!.
+
+To solve $f(x) = 0$ we get the next step $x_{n+1}$ by solving
+\[ f'(x_n) z = -f(x_n) \]
+for $z$.
+In the damped Newton method we now control the step via the damping factor $\alpha \in (0, 1]$
+\[ x_{n+1} = x_n + \alpha z\]
+We look for
+\[ \norm{f(x_n+ \alpha_{opt} z)} = \min_{\alpha} \norm{f(x_n + \alpha z)}\]
+First let's try the sequence (forgot the name) $\alpha = 1, \frac{1}{2},
+\frac{1}{4}, \dots, \alpha_{min}$.
+A possible stopping criterion is then
+\[\norm{f(x_n+\alpha z)} < \rho \norm{f(x_n)} \]
+where $\rho < 1$ is some safety parameter.
+(Try 0.9 for example)
+
+
 \subsection{Version 2}
 Another option would be to write the system in the following form
 \begin{IEEEeqnarray*}{rCl}
