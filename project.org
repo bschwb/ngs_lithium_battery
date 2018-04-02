@@ -87,15 +87,13 @@
       which would induce a reasonably sized current.
       Maybe in Garcia05 they used (actual potential - open circuit potential) as the equilibrium contact potential.
       Then the electrical work would be another small potential step to overcome, which makes more sense I think.
-*** TODO Exchange current density concentration?
-Faraday constant times concentration gives C/m^3.
-With reaction rate unit m/s we get A/m^2, which is a correct unit for current density.
-Now is it better to use 2D concentration to get A/m?
-Or do we get A/m automatically anyway, because we integrate over 1D?
 *** DONE Use (actual potential - open-circuit potential) for surface overpotential instead of work 
     CLOSED: [2018-03-23 Fri 14:45]
-*** NEXT Try using 0V Dirichlet at anode as simplification
-to avoid for now dealing with anode concentration etc.
+*** DONE Try using 0V Dirichlet at anode as simplification
+    CLOSED: [2018-04-02 Mon 14:26]
+    To avoid for now dealing with anode concentration etc.
+    Seems to work a bit better.
+    At least inversion works for one step.
 *** DONE Fix initial potential
     CLOSED: [2018-04-02 Mon 14:23]
 **** DONE Is this a reasonable initial potential?
@@ -116,6 +114,11 @@ to avoid for now dealing with anode concentration etc.
      Cf. with pictures in Garcia2005.
 **** CANCELLED Maybe try setting 4.2V everywhere except the separator
      CLOSED: [2018-04-02 Mon 14:23]
+*** TODO Exchange current density concentration?
+Faraday constant times concentration gives C/m^3.
+With reaction rate unit m/s we get A/m^2, which is a correct unit for current density.
+Now is it better to use 2D concentration to get A/m?
+Or do we get A/m automatically anyway, because we integrate over 1D?
 ** TODO Add README
 ** TODO Add a formula for the activity coefficient
 ** TODO Find missing constants/values

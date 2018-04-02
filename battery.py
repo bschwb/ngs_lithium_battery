@@ -37,7 +37,8 @@ thick = area / width
 
 ## Initial values
 normalization_concentration_3d = 22.86 * 1e-15  # mol µm^-3
-normalization_concentration = normalization_concentration_3d / thick  # mol µm^-2
+# normalization_concentration = normalization_concentration_3d / thick  # mol µm^-2
+normalization_concentration = normalization_concentration_3d  # mol µm^-3
 solubility_limit_cathode = normalization_concentration
 solubility_limit_anode = 0.72 * normalization_concentration
 init_concentr = {'electrolyte': 1.2 * normalization_concentration,
@@ -122,7 +123,7 @@ def charge_flux_prefactor_anode(concentration):
 mesh = ngs.Mesh('mesh.vol')
 
 n_lithium_space = ngs.H1(mesh, order=1)
-potential_space = ngs.H1(mesh, order=1)
+potential_space = ngs.H1(mesh, order=1, dirichlet='anode')
 V = ngs.FESpace([n_lithium_space, potential_space])
 print(V.ndof)
 
@@ -154,22 +155,20 @@ a += ngs.SymbolicBFI(cf_diffusivity * discharge_rate / F * v,
                      ngs.BND, definedon=mesh.Boundaries('anode'))
 
 a += ngs.SymbolicBFI(-cf_diffusivity * cf_valence * F / R / temperature * u * grad(p) * grad(v))
-a += ngs.SymbolicBFI(-charge_flux_prefactor_cathode(u) * (alpha_a + alpha_c)
-                     * material_overpotential_cathode(u, p) * cf_diffusivity
-                     * cf_valence * F**2 / R**2 / temperature**2 / conductivity['particle'] * u * v,
-                     ngs.BND, definedon=mesh.Boundaries('particle'))
-a += ngs.SymbolicBFI(-charge_flux_prefactor_anode(u) * (alpha_a + alpha_c)
-                     * material_overpotential_anode(u, p) * cf_diffusivity
-                     * cf_valence * F**2 / R**2 / temperature**2 / cf_conductivity * u * v,
-                     ngs.BND, definedon=mesh.Boundaries('anode'))
+# a += ngs.SymbolicBFI(-charge_flux_prefactor_cathode(u) * (alpha_a + alpha_c)
+#                      * material_overpotential_cathode(u, p) * cf_diffusivity
+#                      * cf_valence * F**2 / R**2 / temperature**2 / conductivity['particle'] * u * v,
+#                      ngs.BND, definedon=mesh.Boundaries('particle'))
+# a += ngs.SymbolicBFI(-charge_flux_prefactor_anode(u) * (alpha_a + alpha_c)
+#                      * material_overpotential_anode(u, p) * cf_diffusivity
+#                      * cf_valence * F**2 / R**2 / temperature**2 / cf_conductivity * u * v,
+#                      ngs.BND, definedon=mesh.Boundaries('anode'))
 a += ngs.SymbolicBFI(cf_diffusivity * F / R / temperature / conductivity['electrolyte']
                      * discharge_rate * u * v,
                      ngs.BND, definedon=mesh.Boundaries('cathode'))
 
 a += ngs.SymbolicBFI(-cf_conductivity * grad(p) * grad(q))
-a += ngs.SymbolicBFI(-charge_flux_prefactor_anode(u) * (alpha_a + alpha_c) * F / R / temperature
-                     * material_overpotential_anode(u, p) * q,
-                     ngs.BND, definedon=mesh.Boundaries('anode'))
+# a += ngs.SymbolicBFI(-charge_flux_prefactor_cathode(u) * (alpha_a + alpha_c) * F / R / temperature
 a += ngs.SymbolicBFI(-charge_flux_prefactor_cathode(u) * (alpha_a + alpha_c) * F / R / temperature
                      * material_overpotential_cathode(u, p) * q,
                      ngs.BND, definedon=mesh.Boundaries('particle'))
@@ -231,6 +230,7 @@ with ngs.TaskManager():
     mid = gfu.vec.CreateVector()
     d = gfu.vec.CreateVector()
     z = gfu.vec.CreateVector()
+    xx = gfu.vec.CreateVector()
     mat = mass.mat.CreateMatrix()
 
     curr = gfu.vec.CreateVector()
@@ -245,8 +245,12 @@ with ngs.TaskManager():
         curr.data = gfu.vec
         for i in range(2):
             a.Apply(curr, w)
+            a.Apply(gfu.vec, xx)
             print('curr:', ngs.Norm(curr))
+            print('xx:', ngs.Norm(xx))
             print('w:', ngs.Norm(w))
+            print('w0:', ngs.Norm(w[1:len(gfu.components[0].vec)]))
+            print('w1:', ngs.Norm(w[len(gfu.components[0].vec):len(gfu.components[0].vec)+len(gfu.components[1].vec)]))
             w2.data = mass.mat * curr
             mid.data = timestep/2 * (w + b) - w2 + b2
             print('mid:', ngs.Norm(mid))
@@ -256,6 +260,7 @@ with ngs.TaskManager():
             inv = mat.Inverse(V.FreeDofs())
             du.data = inv * mid
             print('du:', ngs.Norm(du))
+            input()
             curr.data -= du
 
         gfu.vec.data = curr.data
