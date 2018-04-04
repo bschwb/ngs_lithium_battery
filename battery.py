@@ -41,7 +41,7 @@ normalization_concentration_3d = 22.86 * 1e-15  # mol µm^-3
 normalization_concentration = normalization_concentration_3d  # mol µm^-3
 solubility_limit_cathode = normalization_concentration
 solubility_limit_anode = 0.72 * normalization_concentration
-init_concentr = {'electrolyte': 1.2 * normalization_concentration,
+init_concentr = {'electrolyte': 0.18 * normalization_concentration,
                  'particle': 0.18 * normalization_concentration}
 cathode_init_pot = 4.2  # Volt
 
@@ -213,10 +213,10 @@ with ngs.TaskManager():
     # Visualization
     ngs.Draw(gfu.components[1])
     ngs.Draw(1/normalization_concentration * gfu.components[0], mesh, name='nconcentration')
-    input()
     visoptions.autoscale = '0'
     visoptions.mminval = '0'
-    visoptions.mmaxval = '1.5'
+    visoptions.mmaxval = '1.3'
+    input()
 
     # Time stepping
     timestep = 4
