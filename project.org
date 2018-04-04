@@ -126,13 +126,16 @@
 **** DONE Recheck method
      CLOSED: [2018-04-02 Mon 15:20]
      Works now kind of for very small damping parameters and safety rho = 1.
-*** NEXT Try capping of open circuit potentials when out of range
+*** DONE Try capping of open circuit potentials when out of range
+    CLOSED: [2018-04-05 Thu 00:06]
     This are the exp functions that can overflow.
     By capping them in a range that's not important for the model anymore we avoid that.
     E.g. relative concentration over 1 in particles.
     Make sure to use smooth enough cap (exp, tanh etc).
-**** NEXT Draw current open circuit potential manganese
-**** TODO Think through how to cap off at top & bottom
+**** DONE Draw current open circuit potential manganese
+     CLOSED: [2018-04-05 Thu 00:06]
+**** DONE Think through how to cap off at top & bottom
+     CLOSED: [2018-04-05 Thu 00:06]
 *** TODO Exchange current density concentration?
 Faraday constant times concentration gives C/m^3.
 With reaction rate unit m/s we get A/m^2, which is a correct unit for current density.
