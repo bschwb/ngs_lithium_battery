@@ -41,7 +41,7 @@ normalization_concentration_3d = 22.86 * 1e-15  # mol µm^-3
 normalization_concentration = normalization_concentration_3d  # mol µm^-3
 solubility_limit_cathode = normalization_concentration
 solubility_limit_anode = 0.72 * normalization_concentration
-init_concentr = {'electrolyte': 0.18 * normalization_concentration,
+init_concentr = {'electrolyte': 0.05 * normalization_concentration,
                  'particle': 0.18 * normalization_concentration}
 cathode_init_pot = 4.2  # Volt
 
@@ -216,7 +216,7 @@ with ngs.TaskManager():
 
     f_pot = ngs.LinearForm(initial_potential_space)
     # permittivity seems to be missing, but gives too high value if included
-    # f_pot += ngs.SymbolicLFI(cf_valence * cf_n0 * F * psi)
+    f_pot += ngs.SymbolicLFI(cf_valence * cf_n0 * F * psi)
     f_pot.Assemble()
 
     gf_phi = ngs.GridFunction(initial_potential_space)
@@ -229,6 +229,7 @@ with ngs.TaskManager():
 
     # Visualization
     ngs.Draw(gfu.components[1])
+    input()
     ngs.Draw(1/normalization_concentration * gfu.components[0], mesh, name='nconcentration')
     visoptions.autoscale = '0'
     visoptions.mminval = '0'
@@ -245,7 +246,6 @@ with ngs.TaskManager():
     b2 = gfu.vec.CreateVector()
     mid = gfu.vec.CreateVector()
     new_mid = gfu.vec.CreateVector()
-    d = gfu.vec.CreateVector()
     z = gfu.vec.CreateVector()
     xx = gfu.vec.CreateVector()
     mat = mass.mat.CreateMatrix()

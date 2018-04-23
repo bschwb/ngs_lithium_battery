@@ -136,6 +136,32 @@
      CLOSED: [2018-04-05 Thu 00:06]
 **** DONE Think through how to cap off at top & bottom
      CLOSED: [2018-04-05 Thu 00:06]
+*** DONE Use appropriate concentration of lithium in electrolyte
+    CLOSED: [2018-04-24 Tue 08:57]
+    Henrik from the electrochem institute in KTH told me,
+    that typical concentration in electrolyte is around 1000 mol / m^3 = 1 mol / dm^3.
+*** NEXT Solve only particles
+**** NEXT Derive boundary condition for lithium flux for particle interface
+*** TODO Bring linearforms on rhs
+*** TODO Implement interface conditions correctly
+**** DONE Understand if Nitsche's method is applicable
+     CLOSED: [2018-04-18 Wed 12:27]
+     Probably not
+***** CANCELLED Can Nitsche's method have nonzero values for interface conditions?
+      CLOSED: [2018-04-18 Wed 12:27]
+      Do I want a jump or a fixed value at the interface?
+      I thought a fixed value!!!
+http://www.asc.tuwien.ac.at/~schoeberl/wiki/lva/numpde15/DG.pdf
+**** TODO Do I even need interface conditions?
+     Yeah bc. I don't want a jump?
+**** TODO Document method
+**** TODO Implement method
+ https://sourceforge.net/p/ngsolve/discussion/ngs-py/thread/5bb706f6/
+ https://ngsolve.org/docu/nightly/how_to/howto_definedon.html
+ How to test if the method does the right thing?
+***** TODO Do I have to take 2 different meshes?
+***** TODO Can I build a product space in NGSolve of two spaces on different meshes?
+*** TODO Check if time evol of isolated parts of system matrix make sense
 *** TODO Exchange current density concentration?
 Faraday constant times concentration gives C/m^3.
 With reaction rate unit m/s we get A/m^2, which is a correct unit for current density.
