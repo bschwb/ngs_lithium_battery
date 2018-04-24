@@ -141,7 +141,11 @@
     Henrik from the electrochem institute in KTH told me,
     that typical concentration in electrolyte is around 1000 mol / m^3 = 1 mol / dm^3.
 *** NEXT Solve only particles
-**** NEXT Derive boundary condition for lithium flux for particle interface
+**** DONE Derive boundary condition for lithium flux for particle interface
+     CLOSED: [2018-04-24 Tue 09:02]
+     It's just current density divided by Faradays constant?
+     cf. Li boundary condition on 3
+**** NEXT Implement model only on particles
 *** TODO Bring linearforms on rhs
 *** TODO Implement interface conditions correctly
 **** DONE Understand if Nitsche's method is applicable
