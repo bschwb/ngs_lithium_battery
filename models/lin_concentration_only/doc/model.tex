@@ -34,7 +34,7 @@
 The domain is only the electrolyte, in the dimensions of the separator and
 There is some initial lithium concentration and lithium inflow from the bottom.
 
-$\nv$ is the normal vector on a boundary, which always points outwards of the domain.
+$\nv$ is the normal vector on a boundary, which according to NGSolve seems to point inwards.
 
 \section{Model Equations}
 \begin{figure}[h]
@@ -47,7 +47,7 @@ $\nv$ is the normal vector on a boundary, which always points outwards of the do
   \pn(t, x) &=& \nabla \cdot (D_m \nabla \n(t, x)) \qquad
   &(t, x) \in (0, \infty) \times \Omega \\
 \n(0, x) &=& n_0  &x\in\Omega \\
-\pnn &=& -\frac{I_0}{A\F}  &\text{on } \partial\Omega_0 \\
+\pnn &=& \frac{I_0}{A\F}  &\text{on } \partial\Omega_0 \\
 \pnn &=& 0  &\text{on }\partial\Omega_1 \\
 \pnn &=& 0  &\text{on }\partial\Omega_2
 \end{IEEEeqnarray*}
@@ -57,7 +57,7 @@ Find $\n \in (0, \infty) \times H^1(\Omega)$ s.t.
 \begin{IEEEeqnarray*}{rClR}
   \I{\pn v} &=& -\I{D_m \nabla\n \cdot \nabla v} + \Ib{D_m\pnn v} \quad
   &\forall v \in H^1(\Omega)\\
-  &=& -\I{D_m \nabla\n \cdot \nabla v} - \int_{\partial\Omega_0}D_m
+  &=& -\I{D_m \nabla\n \cdot \nabla v} + \int_{\partial\Omega_0}D_m
   \frac{I_0}{A\F} v\ds &\forall v \in H^1(\Omega)
 \end{IEEEeqnarray*}
 
